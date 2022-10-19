@@ -7,6 +7,7 @@ const upload = require('express-fileupload');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminroutes');
 const musicRoutes = require('./routes/musicRoutes');
+const subscriptionRoutes = require('./routes/subscriptionRoutes');
 
 const app = express();
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(upload());
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/music', musicRoutes);
+app.use('/api/v1/subscription', subscriptionRoutes);
 
 const PORT = process.env.PORT || 3000;
 

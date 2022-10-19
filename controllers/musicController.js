@@ -94,7 +94,7 @@ module.exports.addMusic = [
   
         try {
 
-            const audioRef = ref(storage, `music/${ Date.now() + audio.name.split('.')[1]} `);
+            const audioRef = ref(storage, `music/${ Date.now() + '.' + audio.name.split('.')[1]} `);
             let audioLink 
             await uploadBytes(audioRef, audio.data)
             .then(snapshot => {

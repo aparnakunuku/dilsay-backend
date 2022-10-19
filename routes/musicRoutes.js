@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { addMusicCategory, deleteMusicCategory, getAllMusicCategories, addMusic, deleteMusic, getAllMusic, getMusicById, updateMusic } = require("../controllers/musicController");
+const { isAuth } = require("../middlewares/verifyToken");
 
 const musicRoutes = Router();
 
@@ -10,6 +11,6 @@ musicRoutes.post("/addMusic", addMusic);
 musicRoutes.post("/updateMusic", updateMusic);
 musicRoutes.get("/getMusicById/:id", getMusicById);
 musicRoutes.get("/deleteMusic/:id", deleteMusic);
-musicRoutes.get("/getAllMusic", getAllMusic);
+musicRoutes.get("/getAllMusic", isAuth, getAllMusic);
 
 module.exports = musicRoutes;
