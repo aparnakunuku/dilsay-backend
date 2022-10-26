@@ -140,6 +140,21 @@ module.exports.updateMusic = [
 
             let audioLink = req.body?.audio;
 
+            if (req.files?.audio) {
+                const audioRef = ref(storage, `music/${ Date.now() + '.' + req.files?.audio.name.split('.')[1]} `);
+                
+                await uploadBytes(audioRef, req.files?.audio.data)
+                    .then(snapshot => {
+                        return getDownloadURL(snapshot.ref)
+                    })
+                    .then(downloadURL => {
+                        audioLink = downloadURL
+                    })
+                    .catch(error => {
+                        throw Error(error);
+                    })
+            }
+
             const music = await musicModel.findOneAndUpdate({ _id: req?.body?.musicId }, { musicName: req?.body?.musicName, audioLink, categoryName: req?.body?.categoryId });
             res.status(201).json({ music: music, message: "Music created Successfully" });
             

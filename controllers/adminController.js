@@ -1,5 +1,6 @@
 const { body, validationResult } = require("express-validator");
 const interestModel = require("../models/interestModel");
+const userModel = require("../models/userModel");
 
 
 module.exports.addInterest = [
@@ -74,3 +75,35 @@ module.exports.getAllInterests = async (req, res) => {
     }
 
 }
+
+module.exports.confirmVerification = [
+
+    body("userId").not().isEmpty(),
+    body("isVerified").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { userId, isVerified, verificationMessage } = req.body;
+  
+        try {
+
+            const user = await userModel.findOneAndUpdate({ _id: userId }, { $set: { 'verification.isVerified': isVerified, 'verification.verificationMessage': verificationMessage } });
+            res.status(201).json({ user: user, message: "Verification Status Updated" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]

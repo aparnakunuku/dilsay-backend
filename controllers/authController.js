@@ -59,7 +59,7 @@ module.exports.registerUser = [
   
         try {
 
-            const user = await userModel.create({ name, phoneNumber, gender, location:{type: "Point", coordinates: [longitude, latitude]}, userType });
+            const user = await userModel.create({ name, phoneNumber, gender, location:{type: "Point", coordinates: [longitude, latitude]}, userType, IsOnline: true });
             res.status(201).json({ user: user, message: "User Registered Successfully" });
             
         }

@@ -7,6 +7,9 @@ const userSchema = mongoose.Schema(
             type: String,
             required: true,
         },
+        images: [{
+            type: String
+        }],
         phoneNumber: {
             type: String,
             required: true,
@@ -30,13 +33,21 @@ const userSchema = mongoose.Schema(
         bio: {
             type: String
         },
-        intrests: {
+        interests: [{
             type: ObjectId,
             ref: "interest",
-        },
-        isVerified: {
-            type: Boolean,
-            default: false
+        }],
+        verification: {
+            verificationImage: {
+                type: String,
+            },
+            isVerified: {
+                type: Boolean,
+                default: false,
+            },
+            verificationMessage: {
+                type: String,
+            },
         },
         isOnline: {
             type: Boolean,
@@ -62,8 +73,13 @@ const userSchema = mongoose.Schema(
             ref: 'user'
         }],
         subscription: {
-            type: ObjectId,
-            ref: "subscription",
+            package: {
+                type: ObjectId,
+                ref: "subscription",
+            },
+            subscribedAt: {
+                type: Date,
+            }
         },
         userType: {
             type: String,
