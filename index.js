@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const dotenv = require("dotenv");
 const upload = require('express-fileupload');
 const authRoutes = require('./routes/authRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const adminRoutes = require('./routes/musicRoutes');
 const musicRoutes = require('./routes/musicRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -17,7 +17,7 @@ app.use(bodyParser.json({limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({limit: "30mb", extended: true}));
 app.use(cors());
 app.use(upload());
-//a
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/music', musicRoutes);
