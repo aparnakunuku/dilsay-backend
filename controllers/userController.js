@@ -3,6 +3,65 @@ const userModel = require("../models/userModel");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const { storage } = require("../config/firebase");
 
+module.exports.showAllProfiles = async (req, res) => {
+    
+    try {
+
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
+
+        let rejected = { _id: { $nin: req?.user?.rejected } };
+        let blocked = { _id: { $nin: req?.user?.blocked } };
+        let blockedBy = { _id: { $nin: req?.user?.blockedBy } };
+
+        let sortByDistance = {
+            location:
+                { $nearSphere:
+                    {
+                        $geometry: { type: "Point",  coordinates: [ req.query.longitude, req.query.latitude ] },
+                    }
+                }
+        };
+
+        let gender = req.query.gender || '';
+        let genderFilter = gender ? { gender: gender } : {}
+
+        let age = req.query.age || '';
+        let ageFilter = age ? { age: age } : {}
+
+        let count = await userModel.countDocuments({ 
+            ...rejected,
+            ...blocked,
+            ...blockedBy,
+            ...genderFilter,
+            ...ageFilter
+        });
+
+        const user = await userModel.find({  
+            ...rejected,
+            ...blocked,
+            ...blockedBy,
+            ...sortByDistance,
+            ...genderFilter,
+            ...ageFilter
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), user: user, message: "Users Fetched Successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
 module.exports.getMyProfile = async (req, res) => {
     
     try {
@@ -265,7 +324,9 @@ module.exports.blockUser = [
   
         try {
 
-            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { $push: { blockedBy: userId } });
+            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { $push: { blocked: userId } });
+            const user1 = await userModel.findOneAndUpdate({ _id: userId }, { $push: { blockedBy: req.user._id } });
+
             res.status(201).json({ user: user, message: "Successfully Updated Online Status" });
             
         }
@@ -296,7 +357,9 @@ module.exports.rejectUser = [
   
         try {
 
-            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { $push: { rejectedBy: userId } });
+            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { $push: { rejected: userId } });
+            const user1 = await userModel.findOneAndUpdate({ _id: userId }, { $push: { rejectedBy: req.user._id } });
+
             res.status(201).json({ user: user, message: "Successfully Updated Online Status" });
             
         }
@@ -329,6 +392,37 @@ module.exports.buySubscription = [
 
             const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { subscription: { package: subscriptionId, subscribedAt: Date.now() } });
             res.status(201).json({ user: user, message: "Subscription added successfully" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]
+
+module.exports.addToViewedProfiles = [
+
+    body("viewedProfiles").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { viewedProfiles } = req.body;
+  
+        try {
+
+            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { $addToSet: {viewedProfiles: {$each: viewedProfiles}} });
+            res.status(201).json({ user: user, message: "Profiles Added to viewed profiles Successfully" });
             
         }
     

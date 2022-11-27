@@ -64,6 +64,18 @@ const userSchema = mongoose.Schema(
               required: true
             }
         },
+        viewedProfiles: [{
+            type: ObjectId,
+            ref: 'user'
+        }],
+        blocked: [{
+            type: ObjectId,
+            ref: 'user'
+        }],
+        rejected: [{
+            type: ObjectId,
+            ref: 'user'
+        }],
         blockedBy: [{
             type: ObjectId,
             ref: 'user'

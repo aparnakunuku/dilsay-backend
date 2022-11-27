@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const musicRoutes = require('./routes/musicRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const userRoutes = require('./routes/userRoutes');
+const inviteRoutes = require('./routes/inviteRoutes');
 
 const app = express();
 dotenv.config();
@@ -23,6 +24,7 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/music', musicRoutes);
 app.use('/api/v1/subscription', subscriptionRoutes);
 app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/invite', inviteRoutes);
 
 const PORT = process.env.PORT || 3000;
 
