@@ -1,31 +1,34 @@
 const mongoose = require("mongoose");
 
+const questionsSchema = mongoose.Schema(
+    {
+        question: {
+            type: String,
+            required: true,
+        },
+        image: {
+            type: String,
+        },
+        option1: {
+            type: String,
+            default: 'Yes'
+        },
+        option2: {
+            type: String,
+            default: 'No'
+        },
+    },
+    { timestamps: true }
+);
+
 const levelSchema = mongoose.Schema(
     {
-        levelName: {
-            type: String,
+        level: {
+            type: Number,
             required: true,
+            unique: true
         },
-        question1: {
-            type: String,
-            required: true,
-        },
-        question2: {
-            type: String,
-            required: true,
-        },
-        question3: {
-            type: String,
-            required: true,
-        },
-        question4: {
-            type: String,
-            required: true,
-        },
-        question5: {
-            type: String,
-            required: true,
-        },
+        questions: [questionsSchema],
     },
     { timestamps: true }
 );
@@ -35,8 +38,9 @@ const gameSchema = mongoose.Schema(
         category: {
             type: String,
             required: true,
+            unique: true
         },
-        levels: levelSchema
+        levels: [levelSchema]
     },
     { timestamps: true }
 );
