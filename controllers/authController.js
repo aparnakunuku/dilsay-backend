@@ -20,18 +20,30 @@ module.exports.loginUser = [
         try {
 
             if (otp !== '1234') {
+
                 res.status(400).json({ message: "Incorrect Otp" });
+
             } else {
+
                 const user = await userModel.findOne({ phoneNumber });
 
                 if (user) {
+
+                    let isProfileCompleted = false
+
+                    if (user?.name && user?.gender && user?.email && user?.jobTitle && user?.dob && user?.bio && user?.name && user?.intrests?.length > 0 && user?.images?.length > 0) {
+                        isProfileCompleted = true
+                    }
     
                     const token = await createToken(user);
-                    res.status(201).json({ message: "Successfully Logged In", user, token });
+                    res.status(201).json({ message: "Successfully Logged In", isProfileCompleted, user, token });
     
                 } else {
+
                     throw Error("User Not Found");
+
                 }
+
             }
 
             

@@ -2,6 +2,8 @@ const { body, validationResult } = require("express-validator");
 const userModel = require("../models/userModel");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const { storage } = require("../config/firebase");
+const inviteModel = require("../models/inviteModel");
+const gameInfoModel = require("../models/gameInfoModel");
 
 module.exports.showAllProfiles = async (req, res) => {
     
@@ -294,6 +296,10 @@ module.exports.deleteMyAccount = async (req, res) => {
     
     try {
 
+        const game = await gameInfoModel.findOneAndDelete({ $or: [ { user1: req.user._id }, { user2: req.user._id } ] });
+
+        const invite = await inviteModel.findOneAndDelete({ $or: [ { sentTo: req.user._id }, { sentBy: req.user._id } ] });
+
         const user = await userModel.findOneAndDelete({ _id: req.user._id });
 
         res.status(201).json({ user: user, message: "User deleted Successfully" });
@@ -326,6 +332,8 @@ module.exports.blockUser = [
 
             const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { $push: { blocked: userId } });
             const user1 = await userModel.findOneAndUpdate({ _id: userId }, { $push: { blockedBy: req.user._id } });
+
+            const game = await gameInfoModel.findOne({ $or: [ { user1: req.user._id }, { user1: userId } ], $or: [ { user2: req.user._id }, { user2: userId } ] });
 
             res.status(201).json({ user: user, message: "Successfully Updated Online Status" });
             

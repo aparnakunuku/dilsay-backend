@@ -4,6 +4,7 @@ const inviteModel = require("../models/inviteModel");
 module.exports.sendInvite = [
 
     body("sentTo").not().isEmpty(),
+    body("pickupLine").not().isEmpty(),
   
     async (req, res) => {
   
@@ -12,11 +13,11 @@ module.exports.sendInvite = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { sentTo } = req.body;
+        const { sentTo, pickupLine } = req.body;
   
         try {
 
-            const invite = await inviteModel.create({ sentTo, sentBy: req.user._id });
+            const invite = await inviteModel.create({ sentTo, sentBy: req.user._id, pickupLine });
             res.status(201).json({ invite: invite, message: "Invite sent Successfully" });
             
         }
@@ -88,7 +89,6 @@ module.exports.acceptOrRejectInvite = [
 
             const invite = await inviteModel.findOneAndUpdate({ _id: inviteId, sentTo: req.user._id }, { inviteStatus });
 
-            
             res.status(201).json({ invite: invite, message: "Invite sent Successfully" });
             
         }

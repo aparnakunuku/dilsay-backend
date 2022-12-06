@@ -300,6 +300,7 @@ module.exports.answerGame = [
                 }
                 
                 if (score >= 4) {
+                    
                     const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { answers: [], questions: [], $inc: { gameLevel: 1 }, tries: 0 });
                     res.status(201).json({ game: game, message: "Answered Successfully" });
 
@@ -375,7 +376,7 @@ module.exports.getGameQuestions = [
                     let selectedQuestions = getRandom(questions?.levels[0]?.questions,5)
 
                     const game = await gameInfoModel.findOneAndUpdate({ gameCategory: categoryId, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { questions: selectedQuestions });
-                    console.log(game)
+                    
                     res.status(201).json({ questions: selectedQuestions, message: "Questions fetched Successfully" });
 
                 } else {

@@ -13,14 +13,14 @@ const inviteSchema = mongoose.Schema(
             ref: 'user',
             required: true,
         },
+        pickupLine: {
+            type: String,
+            required: true
+        },
         inviteStatus: {
             type: String,
             enum: ['Pending', 'Accepted', 'Rejected'],
             default: 'Pending'
-        },
-        gameInfo: {
-            type: ObjectId,
-            ref: 'gameInfo',
         },
         chat: {
             type: ObjectId,
