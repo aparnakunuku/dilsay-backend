@@ -21,10 +21,6 @@ const inviteSchema = mongoose.Schema(
             type: String,
             enum: ['Pending', 'Accepted', 'Rejected'],
             default: 'Pending'
-        },
-        chat: {
-            type: ObjectId,
-            ref: 'chat',
         }
     },
     { timestamps: true }

@@ -11,6 +11,11 @@ const musicSchema = mongoose.Schema(
             type: String,
             required: true
         },
+        movieName: {
+            type: ObjectId,
+            ref: "movie",
+            required: true,
+        },
         categoryName: {
             type: ObjectId,
             ref: "musicCategory",

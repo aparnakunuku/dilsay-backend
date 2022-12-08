@@ -34,6 +34,61 @@ module.exports.addInterest = [
   
 ]
 
+module.exports.updateInterest = [
+
+    body("interestId").not().isEmpty(),
+    body("title").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { interestId, title } = req.body;
+  
+        try {
+
+            const interest = await interestModel.findByIdAndUpdate({ _id: interestId }, { title });
+            res.status(201).json({ interest: interest, message: "Interest updated Successfully" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]
+
+module.exports.getInterestById = async (req, res) => {
+    
+    try {
+
+        const interest = await interestModel.findOne({ _id: req.params.id });
+
+        if (interest) {
+            res.status(201).json({ interest: interest, message: "Interest Fetched Successfully" });
+        } else {
+            throw Error("Cannot find Intrest");
+        }
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
 module.exports.deleteInterest = async (req, res) => {
     
     try {
