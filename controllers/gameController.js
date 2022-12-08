@@ -264,6 +264,41 @@ module.exports.startGame = [
   
 ]
 
+module.exports.acceptOrRejectGameInvite = [
+
+    body("gameCategory").not().isEmpty(),
+    body("user1").not().isEmpty(),
+    body("user2").not().isEmpty(),
+    body("status").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { gameCategory, user1, user2, status } = req.body;
+  
+        try {
+
+            const game = await gameInfoModel.create({ gameCategory, user1, user2 }, { status });
+
+            res.status(201).json({ game: game, message: "Game started Successfully" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]
+
 module.exports.answerGame = [
 
     body("gameCategory").not().isEmpty(),

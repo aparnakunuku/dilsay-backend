@@ -17,12 +17,15 @@ module.exports.showAllProfiles = async (req, res) => {
         let blocked = { _id: { $nin: req?.user?.blocked } };
         let blockedBy = { _id: { $nin: req?.user?.blockedBy } };
 
+        let distance = req.query.distance || 30;
+
         let sortByDistance = {
             location:
                 { $nearSphere:
                     {
                         $geometry: { type: "Point",  coordinates: [ req.query.longitude, req.query.latitude ] },
-                    }
+                    },
+                    $maxDistance: distance
                 }
         };
 

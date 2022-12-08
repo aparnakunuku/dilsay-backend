@@ -43,6 +43,11 @@ const gameInfoSchema = mongoose.Schema(
             ref: 'game',
             required: true,
         },
+        status: {
+            type: String,
+            enum: ['Pending', 'Accepted', 'Rejected'],
+            default: 'Pending'
+        },
         gameLevel: {
             type: Number,
             default: 1,
