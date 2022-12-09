@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { getMyProfile, editProfile, updateUserLocation, changeOnlineStatus, verifyProfile, deleteMyAccount, blockUser, rejectUser, buySubscription, showAllProfiles, addToViewedProfiles } = require("../controllers/userController");
+const { getMyProfile, editProfile, updateUserLocation, changeOnlineStatus, verifyProfile, deleteMyAccount, blockUser, rejectUser, buySubscription, showAllProfiles, addToViewedProfiles, getAllNotifications, likeImage, loveImage } = require("../controllers/userController");
 const { isAuth } = require("../middlewares/verifyToken");
 
 const userRoutes = Router();
@@ -15,5 +15,8 @@ userRoutes.post("/blockUser", isAuth, blockUser);
 userRoutes.post("/rejectUser", isAuth, rejectUser);
 userRoutes.post("/buySubscription", isAuth, buySubscription);
 userRoutes.post("/addToViewedProfiles", isAuth, addToViewedProfiles);
+userRoutes.get("/getAllNotifications", isAuth, getAllNotifications);
+userRoutes.get("/likeImage/:userId/:id", isAuth, likeImage);
+userRoutes.get("/loveImage/:userId/:id", isAuth, loveImage);
 
 module.exports = userRoutes;

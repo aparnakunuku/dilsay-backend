@@ -4,6 +4,7 @@ const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const { storage } = require("../config/firebase");
 const inviteModel = require("../models/inviteModel");
 const gameInfoModel = require("../models/gameInfoModel");
+const notificationModel = require("../models/notificationModel");
 
 module.exports.showAllProfiles = async (req, res) => {
     
@@ -108,9 +109,9 @@ module.exports.editProfile = [
         try {
 
             let image1Link = req.body?.image1;
-            let image2Link = req.body?.image1;
-            let image3Link = req.body?.image1;
-            let image4Link = req.body?.image1;
+            let image2Link = req.body?.image2;
+            let image3Link = req.body?.image3;
+            let image4Link = req.body?.image4;
 
             if (req.files?.image1) {
                 const imageRef = ref(storage, `image/${ Date.now() + '.' + req.files?.image1.name.split('.')[1]} `);
@@ -172,7 +173,24 @@ module.exports.editProfile = [
                     })
             }
 
-            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { name, images: [ image1Link, image2Link, image3Link, image4Link ], gender, jobTitle, dob, email, bio, interests: JSON.parse(interests) });
+            let image1 = image1Link ? { link: image1Link } : {}
+            let image2 = image2Link ? { link: image2Link } : null
+            let image3 = image3Link ? { link: image3Link } : null
+            let image4 = image4Link ? { link: image4Link } : null
+
+            let images = [image1]
+
+            if (image2) {
+                images.push(image2)
+            }
+            if (image3) {
+                images.push(image3)
+            }
+            if (image4) {
+                images.push(image4)
+            }
+
+            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { name, images, gender, jobTitle, dob, email, bio, interests: JSON.parse(interests) });
             res.status(201).json({ user: user, message: "Profile Updated Successfully" });
             
         }
@@ -299,9 +317,11 @@ module.exports.deleteMyAccount = async (req, res) => {
     
     try {
 
-        const game = await gameInfoModel.findOneAndDelete({ $or: [ { user1: req.user._id }, { user2: req.user._id } ] });
+        const notifications = await notificationModel.deleteMany({ $or: [ { user: req.user._id }, { refUser: req.user._id } ] });
 
-        const invite = await inviteModel.findOneAndDelete({ $or: [ { sentTo: req.user._id }, { sentBy: req.user._id } ] });
+        const game = await gameInfoModel.deleteMany({ $or: [ { user1: req.user._id }, { user2: req.user._id } ] });
+
+        const invite = await inviteModel.deleteMany({ $or: [ { sentTo: req.user._id }, { sentBy: req.user._id } ] });
 
         const user = await userModel.findOneAndDelete({ _id: req.user._id });
 
@@ -447,3 +467,124 @@ module.exports.addToViewedProfiles = [
     }
   
 ]
+
+module.exports.getAllNotifications = async (req, res) => {
+    
+    try {
+
+        const notifications = await notificationModel.find({ user: req.user._id });
+
+        res.status(201).json({ notifications: notifications, message: "Notifications Fetched Successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
+module.exports.likeImage = async (req, res) => {
+  
+    try {
+
+        const user = await userModel.findOne({ _id: req.params.userId, 'images._id': req.params.id });
+        let isLiked = false;
+        
+        if (user) {
+
+            let i = 0
+
+            for(let x = 0; x < user.images.length; x++) {
+                if(user.images[i]._id === req.params.id) {
+                    i = x
+                }
+            }
+
+            const index = user.images[0].likes.indexOf(req.user._id);
+
+            if (index > -1) {
+
+                user.images[i].likes.splice(index, 1);
+                user.images[i].likeCount = user.images[0].likeCount-1
+                isLiked = false
+
+            } else {
+
+                user.images[i].likes.push(req.user._id)
+                user.images[i].likeCount = user.images[0].likeCount+1
+                isLiked = true
+                const notification = await notificationModel.create({ user: req.params.userId, refUser: req.user._id, body: `${req.user.name} liked your pic.` })
+
+            }
+            
+        }
+
+        const updatedUser = await user.save();
+
+        res.status(201).json({ updatedUser, isLiked });
+
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
+module.exports.loveImage = async (req, res) => {
+  
+    try {
+
+        const user = await userModel.findOne({ _id: req.params.userId, 'images._id': req.params.id });
+        let isLoved = false;
+        
+        if (user) {
+
+            let i = 0
+
+            for(let x = 0; x < user.images.length; x++) {
+                if(user.images[i]._id === req.params.id) {
+                    i = x
+                }
+            }
+
+            const index = user.images[0].loves.indexOf(req.user._id);
+
+            if (index > -1) {
+
+                user.images[i].loves.splice(index, 1);
+                user.images[i].loveCount = user.images[0].loveCount-1
+                isLoved = false
+
+            } else {
+
+                user.images[i].loves.push(req.user._id)
+                user.images[i].loveCount = user.images[0].loveCount+1
+                isLoved = true
+                const notification = await notificationModel.create({ user: req.params.userId, refUser: req.user._id, body: `${req.user.name} loved your pic.` })
+
+            }
+            
+        }
+
+        const updatedUser = await user.save();
+
+        res.status(201).json({ updatedUser, isLoved });
+
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}

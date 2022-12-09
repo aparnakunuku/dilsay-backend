@@ -1,15 +1,38 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema;
 
+const imageSchema = mongoose.Schema(
+    {
+        link: {
+            type: String,
+        },
+        likeCount: {
+            type: Number,
+            default: 0
+        },
+        loveCount: {
+            type: Number,
+            default: 0
+        },
+        likes: [{
+            type: ObjectId,
+            ref: "user",
+        }],
+        loves: [{
+            type: ObjectId,
+            ref: "user",
+        }],
+    },
+    { timestamps: true }
+);
+
 const userSchema = mongoose.Schema(
     {
         name: {
             type: String,
             required: true,
         },
-        images: [{
-            type: String
-        }],
+        images: [imageSchema],
         phoneNumber: {
             type: String,
             required: true,
