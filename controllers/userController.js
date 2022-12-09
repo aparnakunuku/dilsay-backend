@@ -5,7 +5,6 @@ const { storage } = require("../config/firebase");
 const inviteModel = require("../models/inviteModel");
 const gameInfoModel = require("../models/gameInfoModel");
 const notificationModel = require("../models/notificationModel");
-var mongoose = require('mongoose');
 
 module.exports.showAllProfiles = async (req, res) => {
     
@@ -296,7 +295,20 @@ module.exports.changeOnlineStatus = [
   
         try {
 
-            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { isOnline });
+            const user = await userModel.findOne({ _id: req.user._id }).populate('subscription.package');
+
+            let date = new Date();
+            let validityPeriod = parseInt(user?.subscription?.package?.validityPeriod.substring(0, user?.subscription?.package?.validityPeriod.length-1));
+            date.setDate(date.getDate() + validityPeriod);
+
+            if (Date.now() > date) {
+                await userModel.findOneAndUpdate({ _id: req.user._id }, { isOnline, subscription: null });
+            } else {
+                await userModel.findOneAndUpdate({ _id: req.user._id }, { isOnline });
+            }
+
+            const user1 = 
+
             res.status(201).json({ user: user, message: "Successfully Updated Online Status" });
             
         }
