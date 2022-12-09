@@ -1,6 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const gameInfoModel = require("../models/gameInfoModel");
 const gameModel = require("../models/gameModel");
+const notificationModel = require("../models/notificationModel");
 
 module.exports.getAllGameCategories = async (req, res) => {
     
@@ -235,6 +236,7 @@ module.exports.startGame = [
     body("gameCategory").not().isEmpty(),
     body("user1").not().isEmpty(),
     body("user2").not().isEmpty(),
+    body("status").not().isEmpty(),
   
     async (req, res) => {
   
@@ -243,11 +245,14 @@ module.exports.startGame = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { gameCategory, user1, user2 } = req.body;
+        const { gameCategory, user1, user2, status } = req.body;
   
         try {
 
-            const game = await gameInfoModel.create({ gameCategory, user1, user2 });
+            const game = await gameInfoModel.create({ gameCategory, user1, user2, status });
+
+            let user = user1 === req.user._id ? user2 : user1
+            const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} requested for game category change.` })
 
             res.status(201).json({ game: game, message: "Game started Successfully" });
             
@@ -283,6 +288,9 @@ module.exports.acceptOrRejectGameInvite = [
         try {
 
             const game = await gameInfoModel.create({ gameCategory, user1, user2 }, { status });
+            
+            let user = user1 === req.user._id ? user2 : user1
+            const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} ${status} request for game category change.` })
 
             res.status(201).json({ game: game, message: "Game started Successfully" });
             
@@ -337,16 +345,25 @@ module.exports.answerGame = [
                 if (score >= 4) {
                     
                     const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { answers: [], questions: [], $inc: { gameLevel: 1 }, tries: 0 });
+                    let user = user1 === req.user._id ? user2 : user1
+                    const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
+
                     res.status(201).json({ game: game, message: "Answered Successfully" });
 
                 } else {
                     const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { $inc: { tries: 1 } });
+                    let user = user1 === req.user._id ? user2 : user1
+                    const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
+
                     res.status(400).json({ game: game, message: "Answers do not match. Please try again!" });
                 }
 
             } else {
 
                 const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { answers });
+                let user = user1 === req.user._id ? user2 : user1
+                const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
+
                 res.status(201).json({ game: game, message: "Answered Successfully" });
             
             }

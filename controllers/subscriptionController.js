@@ -7,6 +7,7 @@ module.exports.createSubscription = [
     body("validityPeriod").not().isEmpty(),
     body("discount").not().isEmpty(),
     body("isActive").not().isEmpty(),
+    body("features").not().isEmpty(),
   
     async (req, res) => {
   
@@ -15,11 +16,11 @@ module.exports.createSubscription = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { price, validityPeriod, discount, isActive } = req.body;
+        const { price, validityPeriod, discount, isActive, features } = req.body;
   
         try {
 
-            const subscription = await subscriptionModel.create({ price, validityPeriod, discount, isActive });
+            const subscription = await subscriptionModel.create({ price, validityPeriod, discount, isActive, features });
             res.status(201).json({ subscription: subscription, message: "Subscription created Successfully" });
             
         }
@@ -42,6 +43,7 @@ module.exports.updateSubscription = [
     body("validityPeriod").not().isEmpty(),
     body("discount").not().isEmpty(),
     body("isActive").not().isEmpty(),
+    body("features").not().isEmpty(),
   
     async (req, res) => {
   
@@ -50,11 +52,11 @@ module.exports.updateSubscription = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { subscriptionId, price, validityPeriod, discount, isActive } = req.body;
+        const { subscriptionId, price, validityPeriod, discount, isActive, features } = req.body;
   
         try {
 
-            const subscription = await subscriptionModel.findOneAndUpdate({ _id: subscriptionId }, { price, validityPeriod, discount, isActive });
+            const subscription = await subscriptionModel.findOneAndUpdate({ _id: subscriptionId }, { price, validityPeriod, discount, isActive, features });
             res.status(201).json({ subscription: subscription, message: "Subscription updated Successfully" });
             
         }

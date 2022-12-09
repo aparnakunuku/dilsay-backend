@@ -33,8 +33,18 @@ module.exports.showAllProfiles = async (req, res) => {
         let gender = req.query.gender || '';
         let genderFilter = gender ? { gender: gender } : {}
 
-        let age = req.query.age || '';
-        let ageFilter = age ? { age: age } : {}
+        let startAge = req.query.startAge || '';
+        let endAge = req.query.endAge || '';
+        let ageFilter = (startAge && endAge) ? 
+                            { age: {$gte: startAge , $lte: endAge} } 
+                            : 
+                            (startAge && !endAge) ? 
+                            { age: { $gte: startAge } } 
+                            : 
+                            (!startAge && endAge) ? 
+                            { age: { $lte: endAge } } 
+                            : 
+                            {};
 
         let count = await userModel.countDocuments({ 
             ...rejected,
@@ -96,6 +106,7 @@ module.exports.editProfile = [
     body("email").not().isEmpty(),
     body("bio").not().isEmpty(),
     body("interests").not().isEmpty(),
+    body("isHideAge").not().isEmpty(),
 
     async (req, res) => {
   
@@ -104,7 +115,7 @@ module.exports.editProfile = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { name, gender, jobTitle, dob, email, bio, interests } = req.body;
+        const { name, gender, jobTitle, dob, email, bio, interests, isHideAge } = req.body;
   
         try {
 
@@ -190,7 +201,7 @@ module.exports.editProfile = [
                 images.push(image4)
             }
 
-            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { name, images, gender, jobTitle, dob, email, bio, interests: JSON.parse(interests) });
+            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { name, images, gender, jobTitle, dob, email, bio, interests: JSON.parse(interests), isHideAge });
             res.status(201).json({ user: user, message: "Profile Updated Successfully" });
             
         }

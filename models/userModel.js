@@ -72,6 +72,24 @@ const userSchema = mongoose.Schema(
                 type: String,
             },
         },
+        isHideAge: {
+            type: Boolean,
+            default: false
+        },
+        invitesSentCount: {
+            type: Number,
+            default: 0
+        },
+        invitesAcceptedCount: {
+            type: Number,
+            default: 0
+        },
+        invitesSentTime: {
+            type: Date,
+        },
+        invitesAcceptedTime: {
+            type: Date,
+        },
         isOnline: {
             type: Boolean,
             default: false

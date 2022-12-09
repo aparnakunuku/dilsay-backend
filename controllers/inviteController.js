@@ -1,5 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const inviteModel = require("../models/inviteModel");
+const notificationModel = require("../models/notificationModel");
+const userModel = require("../models/userModel");
 
 module.exports.sendInvite = [
 
@@ -17,8 +19,27 @@ module.exports.sendInvite = [
   
         try {
 
-            const invite = await inviteModel.create({ sentTo, sentBy: req.user._id, pickupLine });
-            res.status(201).json({ invite: invite, message: "Invite sent Successfully" });
+            const user = await userModel.findOne({ _id: req.user._id });
+
+            let date = new Date();
+            date.setDate(date.getDate() - 1);
+
+            if (user.invitesSentCount <= 25 && date > user?.invitesSentTime) {
+                
+                res.status(400).json({ message: "Max invites already sent for the day" });
+            } else {
+
+                const invite = await inviteModel.create({ sentTo, sentBy: req.user._id, pickupLine });
+                const notification = await notificationModel.create({ user: sentTo, refUser: req.user._id, body: `${user.name} sent you an invite.` })
+                if (user.invitesSentCount === 24) {
+                    const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { invitesSentTime: Date.now(), $inc: { invitesSentCount: 1 } });
+                } else {
+                    const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { invitesSentCount: 1, invitesSentTime: null  });
+                }
+                
+                res.status(201).json({ invite: invite, message: "Invite sent Successfully" });
+
+            }
             
         }
     
@@ -87,9 +108,26 @@ module.exports.acceptOrRejectInvite = [
   
         try {
 
-            const invite = await inviteModel.findOneAndUpdate({ _id: inviteId, sentTo: req.user._id }, { inviteStatus });
+            const user = await userModel.findOne({ _id: req.user._id });
 
-            res.status(201).json({ invite: invite, message: "Invite sent Successfully" });
+            let date = new Date();
+            date.setDate(date.getDate() - 1);
+
+            if (inviteStatus === 'Accepted' && user.invitesAcceptedCount >= 10 && date > user?.invitesAcceptedTime) {
+                res.status(400).json({ message: "Max invites already accepted for the day" });
+            } else {
+
+                const invite = await inviteModel.findOneAndUpdate({ _id: inviteId, sentTo: req.user._id }, { inviteStatus });
+                const notification = await notificationModel.create({ user: invite.sentBy, refUser: req.user._id, body: `${user.name} ${inviteStatus} your invite.` })
+                if (inviteStatus === 'Accepted' && user.invitesAcceptedCount == 9) {
+                    const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { invitesAcceptedTime: Date.now(), $inc: { invitesAcceptedCount: 1 } });
+                } else {
+                    const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { invitesAcceptedCount: 1, invitesAcceptedTime: null  });
+                }
+
+                res.status(201).json({ invite: invite, message: "Invite sent Successfully" });
+
+            }
             
         }
     

@@ -1,5 +1,35 @@
 const mongoose = require("mongoose");
 
+const featuresSchema = mongoose.Schema(
+    {
+        isHideAge: {
+            type: Boolean,
+            required: false
+        },
+        isLimitedInvites: {
+            type: Boolean,
+            required: false
+        },
+        isLimitedAccepts: {
+            type: Boolean,
+            required: false
+        },
+        isLocationChange: {
+            type: Boolean,
+            required: false
+        },
+        isNoAds: {
+            type: Boolean,
+            required: false
+        },
+        isGameTries: {
+            type: Boolean,
+            required: false
+        }
+    },
+    { timestamps: true }
+);
+
 const subscriptionSchema = mongoose.Schema(
     {
         price: {
@@ -18,6 +48,7 @@ const subscriptionSchema = mongoose.Schema(
             type: Boolean,
             default: false
         },
+        features: featuresSchema
     },
     { timestamps: true }
 );
