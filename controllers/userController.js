@@ -5,6 +5,7 @@ const { storage } = require("../config/firebase");
 const inviteModel = require("../models/inviteModel");
 const gameInfoModel = require("../models/gameInfoModel");
 const notificationModel = require("../models/notificationModel");
+var mongoose = require('mongoose');
 
 module.exports.showAllProfiles = async (req, res) => {
     
@@ -22,11 +23,11 @@ module.exports.showAllProfiles = async (req, res) => {
 
         let sortByDistance = {
             location:
-                { $nearSphere:
+                { $near:
                     {
                         $geometry: { type: "Point",  coordinates: [ req.query.longitude, req.query.latitude ] },
+                        $maxDistance: distance * 1000
                     },
-                    $maxDistance: distance
                 }
         };
 
@@ -51,21 +52,52 @@ module.exports.showAllProfiles = async (req, res) => {
             ...blocked,
             ...blockedBy,
             ...genderFilter,
-            ...ageFilter
+            ...ageFilter,
+            _id: { $ne: req.user._id }
         });
 
-        const user = await userModel.find({  
+        const users = await userModel.find({  
             ...rejected,
             ...blocked,
             ...blockedBy,
             ...sortByDistance,
             ...genderFilter,
-            ...ageFilter
+            ...ageFilter,
+            _id: { $ne: req.user._id }
         })
         .skip(skip)
-        .limit(pageSize);
+        .limit(pageSize)
+        .lean();
 
-        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), user: user, message: "Users Fetched Successfully" });
+        for (let i = 0; i < users.length; i++) {
+
+            for (let j = 0; j < users[i].images.length; j++) {
+
+                for (let k = 0; k < users[i].images[j].likes.length; k++) {
+                    if (users[i].images[j].likes[k].equals(req.user._id)) {
+                        users[i].images[j].isLiked = true
+                    } else {
+                        users[i].images[j].isLiked = false
+                    }
+                }
+
+                delete users[i].images[j].likes
+
+                for (let k = 0; k < users[i].images[j].loves.length; k++) {
+                    if (users[i].images[j].loves[k].equals(req.user._id)) {
+                        users[i].images[j].isLoved = true
+                    } else {
+                        users[i].images[j].isLoved = false
+                    }
+                }
+
+                delete users[i].images[j].loves
+
+            }
+
+        }
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), users: users, message: "Users Fetched Successfully" });
         
     }
 
