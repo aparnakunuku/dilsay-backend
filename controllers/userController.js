@@ -5,6 +5,8 @@ const { storage } = require("../config/firebase");
 const inviteModel = require("../models/inviteModel");
 const gameInfoModel = require("../models/gameInfoModel");
 const notificationModel = require("../models/notificationModel");
+const chatModel = require("../models/chatModel");
+const messageModel = require("../models/messageModel");
 
 module.exports.showAllProfiles = async (req, res) => {
     
@@ -377,6 +379,12 @@ module.exports.deleteMyAccount = async (req, res) => {
         const game = await gameInfoModel.deleteMany({ $or: [ { user1: req.user._id }, { user2: req.user._id } ] });
 
         const invite = await inviteModel.deleteMany({ $or: [ { sentTo: req.user._id }, { sentBy: req.user._id } ] });
+        
+        const chat = await chatModel.find({ users: { $elemMatch: { $eq: req.user._id } } }).select('_id')
+
+        await chatModel.deleteMany({ users: { $elemMatch: { $eq: req.user._id } } })
+
+        const messages = await messageModel.deleteMany({ chat: chat })
 
         const user = await userModel.findOneAndDelete({ _id: req.user._id });
 
@@ -412,6 +420,15 @@ module.exports.blockUser = [
             const user1 = await userModel.findOneAndUpdate({ _id: userId }, { $push: { blockedBy: req.user._id } });
 
             const game = await gameInfoModel.findOne({ $or: [ { user1: req.user._id }, { user1: userId } ], $or: [ { user2: req.user._id }, { user2: userId } ] });
+
+            const chat = await chatModel.findOneAndDelete({
+                $and: [
+                  { users: { $elemMatch: { $eq: req.user._id } } },
+                  { users: { $elemMatch: { $eq: userId } } },
+                ],
+            })
+
+            const messages = messageModel.deleteMany({ chat: chat._id })
 
             res.status(201).json({ user: user, message: "Successfully Updated Online Status" });
             

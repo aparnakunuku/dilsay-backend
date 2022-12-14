@@ -11,9 +11,14 @@ const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const userRoutes = require('./routes/userRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
 const gameRoutes = require('./routes/gameRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+const connectDB = require('./config/db');
+const socket = require("socket.io");
 
 const app = express();
 dotenv.config();
+
+connectDB();
 
 app.use(bodyParser.json({limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({limit: "30mb", extended: true}));
@@ -27,9 +32,41 @@ app.use('/api/v1/subscription', subscriptionRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/invite', inviteRoutes);
 app.use('/api/v1/game', gameRoutes);
+app.use('/api/v1/chat', chatRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.CONNECTION_URL || 'mongodb+srv://prishiv:prishiv@cluster0.dsjcurq.mongodb.net/?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true})
-    .then( () => app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`)))
-    .catch( (error) => console.log(error.message));
+const server = app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`))
+
+const io = socket(server);
+      
+io.on("connection", (socket) => {
+
+    console.log("Connected to socket.io");
+    
+    socket.on("setup", (userData) => {
+        socket.join(userData._id);
+        socket.emit("connected");
+    });
+
+    socket.on("join chat", (room) => {
+        socket.join(room);
+        console.log("User Joined Room: " + room);
+    });
+
+    socket.on("typing", (room) => socket.in(room).emit("typing"));
+
+    socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
+    socket.on("new message", (newMessageRecieved) => {
+
+        socket.in(newMessageRecieved.refUser._id).emit("message recieved", newMessageRecieved);
+
+    });
+
+    socket.off("setup", () => {
+        console.log("USER DISCONNECTED");
+        socket.leave(userData._id);
+    });
+
+});
