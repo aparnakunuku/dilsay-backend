@@ -1,13 +1,16 @@
 const { Router } = require("express");
-const { addInterest, deleteInterest, getAllInterests, confirmVerification, updateInterest, getInterestById } = require("../controllers/adminController");
+const { addInterest, deleteInterest, getAllInterests, confirmVerification, updateInterest, getInterestById, getAllUsers, deleteUser } = require("../controllers/adminController");
+const { isAuth, isSuperAdmin } = require("../middlewares/verifyToken");
 
 const adminRoutes = Router();
 
-adminRoutes.post("/addInterest", addInterest);
-adminRoutes.post("/updateInterest", updateInterest);
-adminRoutes.get("/getInterestById/:id", getInterestById);
-adminRoutes.get("/deleteInterest/:id", deleteInterest);
-adminRoutes.get("/getAllInterests", getAllInterests);
-adminRoutes.post("/confirmVerification", confirmVerification);
+adminRoutes.get("/getAllUsers", isAuth, isSuperAdmin, getAllUsers);
+adminRoutes.get("/deleteUser/:id", isAuth, isSuperAdmin, deleteUser);
+adminRoutes.post("/addInterest", isAuth, isSuperAdmin, addInterest);
+adminRoutes.post("/updateInterest", isAuth, isSuperAdmin, updateInterest);
+adminRoutes.get("/getInterestById/:id", isAuth, isSuperAdmin, getInterestById);
+adminRoutes.get("/deleteInterest/:id", isAuth, isSuperAdmin, deleteInterest);
+adminRoutes.get("/getAllInterests", isAuth, isSuperAdmin, getAllInterests);
+adminRoutes.post("/confirmVerification", isAuth, isSuperAdmin, confirmVerification);
 
 module.exports = adminRoutes;

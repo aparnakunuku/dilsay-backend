@@ -58,6 +58,56 @@ module.exports.loginUser = [
     
 ];
 
+module.exports.loginAdmin = [
+  
+    body("email").not().isEmpty(),
+    body("password").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+    
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { email, password } = req.body;
+
+        try {
+
+            if (password !== 'Dilsay@2022') {
+
+                res.status(400).json({ message: "Incorrect Password" });
+
+            } else {
+
+                const user = await userModel.findOne({ email });
+
+                if (user) {
+
+                    const token = await createToken(user);
+                    res.status(201).json({ message: "Successfully Logged In", user, token });
+    
+                } else {
+
+                    throw Error("User Not Found");
+
+                }
+
+            }
+
+            
+
+        } catch (err) {
+
+            let error = err.message;
+            res.status(400).json({ error: error });
+
+        }
+    },
+    
+];
+
 module.exports.registerUser = [
 
     body("name").not().isEmpty(),

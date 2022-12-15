@@ -2,6 +2,64 @@ const { body, validationResult } = require("express-validator");
 const interestModel = require("../models/interestModel");
 const userModel = require("../models/userModel");
 
+module.exports.getAllUsers = async (req, res) => {
+    
+    try {
+
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
+
+        const search = req.query.search || '';
+        const searchFilter = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+        let count = await userModel.countDocuments({
+            userType: "User",
+            ...searchFilter,
+        });
+
+        const users = await userModel.find({
+            userType: "User",
+            ...searchFilter,
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), users: users, message: "Users fetched successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+};
+
+module.exports.deleteUser = async (req, res) => {
+    
+    try {
+
+        const user = await userModel.findOneAndDelete({ _id: req.params.id });
+
+        if (user) {
+            res.status(201).json({ user: user, message: "User Deleted Successfully" });
+        } else {
+            throw Error("Cannot find User");
+        }
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
 
 module.exports.addInterest = [
 
