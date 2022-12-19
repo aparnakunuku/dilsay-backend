@@ -1,17 +1,17 @@
 const { Router } = require("express");
 const { addGameLevel, addGameCategory, getAllGameCategories, getAllGameLevels, deleteGameCategory, deleteGameLevel, addQuestions, getAllQuestions, startGame, answerGame, getGameQuestions, acceptOrRejectGameInvite } = require("../controllers/gameController");
-const { isAuth } = require("../middlewares/verifyToken");
+const { isAuth, isSuperAdmin } = require("../middlewares/verifyToken");
 
 const gameRoutes = Router();
 
-gameRoutes.get("/getAllGameCategories", getAllGameCategories);
-gameRoutes.post("/addGameCategory", addGameCategory);
-gameRoutes.get("/deleteGameCategory/:id", deleteGameCategory);
-gameRoutes.get("/getAllGameLevels/:id", getAllGameLevels);
-gameRoutes.post("/addGameLevel", addGameLevel);
-gameRoutes.post("/deleteGameLevel", deleteGameLevel);
-gameRoutes.post("/addQuestions", addQuestions);
-gameRoutes.post("/getAllQuestions", getAllQuestions);
+gameRoutes.get("/getAllGameCategories", isAuth, getAllGameCategories);
+gameRoutes.post("/addGameCategory", isAuth, isSuperAdmin, addGameCategory);
+gameRoutes.get("/deleteGameCategory/:id", isAuth, isSuperAdmin, deleteGameCategory);
+gameRoutes.get("/getAllGameLevels/:id", isAuth, getAllGameLevels);
+gameRoutes.post("/addGameLevel", isAuth, isSuperAdmin, addGameLevel);
+gameRoutes.post("/deleteGameLevel", isAuth, isSuperAdmin, deleteGameLevel);
+gameRoutes.post("/addQuestions", isAuth, isSuperAdmin, addQuestions);
+gameRoutes.post("/getAllQuestions", isAuth, getAllQuestions);
 gameRoutes.post("/startGame", isAuth, startGame);
 gameRoutes.post("/acceptOrRejectGameInvite", isAuth, acceptOrRejectGameInvite);
 gameRoutes.post("/answerGame", isAuth, answerGame);
