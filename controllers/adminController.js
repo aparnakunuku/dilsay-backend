@@ -174,9 +174,24 @@ module.exports.getAllInterests = async (req, res) => {
     
     try {
 
-        const interests = await interestModel.find({  });
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
 
-        res.status(201).json({ interests: interests, message: "Interests Fetched Successfully" });
+        const search = req.query.search || '';
+        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+
+        let count = await interestModel.countDocuments({
+            ...searchFilter,
+        });
+
+        const interests = await interestModel.find({ 
+            ...searchFilter,
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), interests: interests, message: "Interests Fetched Successfully" });
         
     }
 

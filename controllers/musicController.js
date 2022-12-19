@@ -118,9 +118,24 @@ module.exports.getAllMusicCategories = async (req, res) => {
     
     try {
 
-        const musicCategories = await musicCategoryModel.find({  });
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
 
-        res.status(201).json({ musicCategories: musicCategories, message: "Music Categories Fetched Successfully" });
+        const search = req.query.search || '';
+        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+
+        let count = await musicCategoryModel.countDocuments({
+            ...searchFilter,
+        });
+
+        const musicCategories = await musicCategoryModel.find({ 
+            ...searchFilter,
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), musicCategories: musicCategories, message: "Music Categories Fetched Successfully" });
         
     }
 
@@ -281,7 +296,7 @@ module.exports.getAllMusic = async (req, res) => {
 
         const search = req.query.search || '';
 
-        const music = await musicModel.find({  }).populate('movieName').lean();
+        const music = await musicModel.find({  }).populate('movieName').populate('movieName categoryName').lean();
 
         let musics = []
 
@@ -326,6 +341,41 @@ module.exports.getAllMusic = async (req, res) => {
         }
 
         res.status(201).json({ music: musics, message: "Music Fetched Successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
+module.exports.getAllMusics = async (req, res) => {
+    
+    try {
+
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
+
+        const search = req.query.search || '';
+        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+
+        let count = await musicModel.countDocuments({
+            ...searchFilter,
+        });
+
+        const musics = await musicModel.find({ 
+            ...searchFilter
+        })
+        .populate('categoryName movieName')
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), musics: musics, message: "Music Fetched Successfully" });
         
     }
 
@@ -480,9 +530,24 @@ module.exports.getAllMovies = async (req, res) => {
     
     try {
 
-        const movie = await movieModel.find({  });
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
 
-        res.status(201).json({ movie: movie, message: "Movie Fetched Successfully" });
+        const search = req.query.search || '';
+        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+
+        let count = await movieModel.countDocuments({
+            ...searchFilter,
+        });
+
+        const movies = await movieModel.find({ 
+            ...searchFilter,
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), movies: movies, message: "Movies Fetched Successfully" });
         
     }
 

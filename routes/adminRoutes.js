@@ -10,7 +10,7 @@ adminRoutes.post("/addInterest", isAuth, isSuperAdmin, addInterest);
 adminRoutes.post("/updateInterest", isAuth, isSuperAdmin, updateInterest);
 adminRoutes.get("/getInterestById/:id", isAuth, isSuperAdmin, getInterestById);
 adminRoutes.get("/deleteInterest/:id", isAuth, isSuperAdmin, deleteInterest);
-adminRoutes.get("/getAllInterests", isAuth, isSuperAdmin, getAllInterests);
+adminRoutes.get("/getAllInterests", isAuth, getAllInterests);
 adminRoutes.post("/confirmVerification", isAuth, isSuperAdmin, confirmVerification);
 
 module.exports = adminRoutes;

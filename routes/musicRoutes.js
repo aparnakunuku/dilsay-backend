@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { addMusicCategory, deleteMusicCategory, getAllMusicCategories, addMusic, deleteMusic, getAllMusic, getMusicById, updateMusic, updateMusicCategory, getMusicCategoryById, addMovie, updateMovie, getMovieById, deleteMovie, getAllMovies } = require("../controllers/musicController");
+const { addMusicCategory, deleteMusicCategory, getAllMusicCategories, addMusic, deleteMusic, getAllMusic, getMusicById, updateMusic, updateMusicCategory, getMusicCategoryById, addMovie, updateMovie, getMovieById, deleteMovie, getAllMovies, getAllMusics } = require("../controllers/musicController");
 const { isAuth } = require("../middlewares/verifyToken");
 
 const musicRoutes = Router();
@@ -14,6 +14,7 @@ musicRoutes.post("/updateMusic", updateMusic);
 musicRoutes.get("/getMusicById/:id", getMusicById);
 musicRoutes.get("/deleteMusic/:id", deleteMusic);
 musicRoutes.get("/getAllMusic", isAuth, getAllMusic);
+musicRoutes.get("/getAllMusics", isAuth, getAllMusics);
 musicRoutes.post("/addMovie", addMovie);
 musicRoutes.post("/updateMovie", updateMovie);
 musicRoutes.get("/getMovieById/:id", getMovieById);
