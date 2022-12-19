@@ -55,6 +55,59 @@ module.exports.addGameCategory = [
   
 ]
 
+module.exports.updateGameCategory = [
+
+    body("categoryId").not().isEmpty(),
+    body("category").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { categoryId, category } = req.body;
+  
+        try {
+
+            const gameCategory = await gameModel.create({ _id: categoryId }, { category });
+
+            
+            res.status(201).json({ category: gameCategory, message: "Category updated Successfully" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]
+
+module.exports.getGameCategoryById = async (req, res) => {
+    
+    try {
+
+        const gameCategory = await gameModel.findOne({ _id: req.params.id });
+
+        res.status(201).json({ gameCategory: gameCategory, message: "Game Category Fetched Successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
 module.exports.deleteGameCategory = async (req, res) => {
     
     try {
