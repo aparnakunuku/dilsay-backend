@@ -2,14 +2,30 @@ const { body, validationResult } = require("express-validator");
 const gameInfoModel = require("../models/gameInfoModel");
 const gameModel = require("../models/gameModel");
 const notificationModel = require("../models/notificationModel");
+const questionModel = require("../models/questionModel");
 
 module.exports.getAllGameCategories = async (req, res) => {
     
     try {
 
-        const gameCategories = await gameModel.find({  });
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
 
-        res.status(201).json({ gameCategories: gameCategories, message: "Game Categories Fetched Successfully" });
+        const search = req.query.search || '';
+        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+
+        let count = await gameModel.countDocuments({
+            ...searchFilter,
+        });
+
+        const gameCategories = await gameModel.find({ 
+            ...searchFilter,
+        })
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), gameCategories: gameCategories, message: "Game Categories Fetched Successfully" });
         
     }
 
@@ -71,7 +87,7 @@ module.exports.updateGameCategory = [
   
         try {
 
-            const gameCategory = await gameModel.create({ _id: categoryId }, { category });
+            const gameCategory = await gameModel.findOneAndUpdate({ _id: categoryId }, { category });
 
             
             res.status(201).json({ category: gameCategory, message: "Category updated Successfully" });
@@ -112,7 +128,7 @@ module.exports.deleteGameCategory = async (req, res) => {
     
     try {
 
-        const gameCategory = await gameModel.deleteOne({ _id: req.params.id });
+        const gameCategory = await gameModel.findOneAndDelete({ _id: req.params.id });
 
         res.status(201).json({ gameCategory: gameCategory, message: "Game Category Deleted Successfully" });
         
@@ -131,9 +147,20 @@ module.exports.getAllGameLevels = async (req, res) => {
     
     try {
 
-        const gameLevels = await gameModel.find({ _id: req.params.id }).select('levels');
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
 
-        res.status(201).json({ gameLevels: gameLevels, message: "Game Levels Fetched Successfully" });
+        let count = await gameModel.countDocuments({});
+
+        const gameLevels = await gameModel.find({ 
+            _id: req.params.id 
+        })
+        .select('levels')
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), gameLevels: gameLevels, message: "Game Levels Fetched Successfully" });
         
     }
 
@@ -212,11 +239,11 @@ module.exports.deleteGameLevel = [
   
 ]
 
-module.exports.addQuestions = [
+module.exports.addQuestion = [
 
     body("categoryId").not().isEmpty(),
     body("level").not().isEmpty(),
-    body("questions").not().isEmpty(),
+    body("question").not().isEmpty(),
   
     async (req, res) => {
   
@@ -225,18 +252,13 @@ module.exports.addQuestions = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { categoryId, level, questions } = req.body;
+        const { categoryId, level, question, image } = req.body;
   
         try {
 
-            const game = await gameModel.findOneAndUpdate({ _id: categoryId, 'levels.level': level }, { 
-                '$set': {
-                    'levels.$.questions':  questions 
-                }
-                
-            });
+            const q = await questionModel.create({ gameCategory: categoryId, level, question, image });
             
-            res.status(201).json({ game: game, message: "Question added Successfully" });
+            res.status(201).json({ question: q, message: "Question added Successfully" });
             
         }
     
@@ -250,6 +272,79 @@ module.exports.addQuestions = [
     }
   
 ]
+
+module.exports.updateQuestion = [
+
+    body("categoryId").not().isEmpty(),
+    body("level").not().isEmpty(),
+    body("question").not().isEmpty(),
+    body("questionId").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { questionId, categoryId, level, question, image } = req.body;
+  
+        try {
+
+            const q = await questionModel.findOneAndUpdate({ _id: questionId }, { gameCategory: categoryId, level, question, image });
+            
+            res.status(201).json({ question: q, message: "Question updated Successfully" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]
+
+module.exports.getQuestionById = async (req, res) => {
+    
+    try {
+
+        const question = await questionModel.findOne({ _id: req.params.id });
+
+        res.status(201).json({ question: question, message: "Question Fetched Successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
+module.exports.deleteQuestion = async (req, res) => {
+    
+    try {
+
+        const question = await questionModel.findOneAndDelete({ _id: req.params.id });
+
+        res.status(201).json({ question: question, message: "Question Deleted Successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
 
 module.exports.getAllQuestions = [
 
@@ -267,9 +362,28 @@ module.exports.getAllQuestions = [
   
         try {
 
-            const questions = await gameModel.findOne({ _id: categoryId, 'levels.level': level }, {'levels.$' : 1});
-            
-            res.status(201).json({ questions: questions, message: "Questions fetched Successfully" });
+            let page = parseInt(req.query.page) || 1;
+            let pageSize = parseInt(req.query.pageSize) || 10;
+            let skip = (page - 1) * pageSize;
+
+            const search = req.query.search || '';
+            const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+
+            let count = await questionModel.countDocuments({
+                ...searchFilter,
+                gameCategory: categoryId, 
+                level 
+            });
+
+            const questions = await questionModel.find({ 
+                ...searchFilter,
+                gameCategory: categoryId, 
+                level 
+            })
+            .skip(skip)
+            .limit(pageSize);
+
+            res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), questions: questions, message: "Questions fetched Successfully" });
             
         }
     
@@ -460,7 +574,7 @@ module.exports.getGameQuestions = [
             
             } else {
 
-                const questions = await gameModel.findOne({ _id: categoryId, 'levels.level': level }, {'levels.$' : 1});
+                const questions = await questionModel.findOne({ gameCategory: categoryId, level });
 
                 if (questions?.levels[0]?.questions.length > 5) {
 
