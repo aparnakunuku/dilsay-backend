@@ -59,17 +59,9 @@ const userSchema = mongoose.Schema(
             type: ObjectId,
             ref: "interest",
         }],
-        verification: {
-            verificationImage: {
-                type: String,
-            },
-            isVerified: {
-                type: Boolean,
-                default: false,
-            },
-            verificationMessage: {
-                type: String,
-            },
+        isVerified: {
+            type: Boolean,
+            default: false,
         },
         isHideAge: {
             type: Boolean,

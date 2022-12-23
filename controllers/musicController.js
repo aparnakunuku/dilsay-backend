@@ -123,7 +123,7 @@ module.exports.getAllMusicCategories = async (req, res) => {
         let skip = (page - 1) * pageSize;
 
         const search = req.query.search || '';
-        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+        const searchFilter = search ? { categoryName: { $regex: search, $options: 'i' } } : {};
 
         let count = await musicCategoryModel.countDocuments({
             ...searchFilter,
@@ -362,7 +362,7 @@ module.exports.getAllMusics = async (req, res) => {
         let skip = (page - 1) * pageSize;
 
         const search = req.query.search || '';
-        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+        const searchFilter = search ? { musicName: { $regex: search, $options: 'i' } } : {};
 
         let count = await musicModel.countDocuments({
             ...searchFilter,
@@ -535,7 +535,7 @@ module.exports.getAllMovies = async (req, res) => {
         let skip = (page - 1) * pageSize;
 
         const search = req.query.search || '';
-        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+        const searchFilter = search ? { movieName: { $regex: search, $options: 'i' } } : {};
 
         let count = await movieModel.countDocuments({
             ...searchFilter,

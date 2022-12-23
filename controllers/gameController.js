@@ -13,7 +13,7 @@ module.exports.getAllGameCategories = async (req, res) => {
         let skip = (page - 1) * pageSize;
 
         const search = req.query.search || '';
-        const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+        const searchFilter = search ? { category: { $regex: search, $options: 'i' } } : {};
 
         let count = await gameModel.countDocuments({
             ...searchFilter,
@@ -367,7 +367,7 @@ module.exports.getAllQuestions = [
             let skip = (page - 1) * pageSize;
 
             const search = req.query.search || '';
-            const searchFilter = search ? { title: { $regex: search, $options: 'i' } } : {};
+            const searchFilter = search ? { question: { $regex: search, $options: 'i' } } : {};
 
             let count = await questionModel.countDocuments({
                 ...searchFilter,

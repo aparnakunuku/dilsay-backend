@@ -7,6 +7,7 @@ const gameInfoModel = require("../models/gameInfoModel");
 const notificationModel = require("../models/notificationModel");
 const chatModel = require("../models/chatModel");
 const messageModel = require("../models/messageModel");
+const verificationModel = require("../models/verificationModel");
 
 module.exports.showAllProfiles = async (req, res) => {
     
@@ -354,8 +355,8 @@ module.exports.verifyProfile = [
                     })
             }
 
-            const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { verification: { verificationImage: imageLink, verificationMessage: "Pending for verification" } });
-            res.status(201).json({ user: user, message: "Profile Updated Successfully" });
+            const verification = await verificationModel.findOneAndUpdate({ user: req.user._id }, { verificationImage: imageLink, verificationStatus: 'Pending', verificationMessage: "Pending for verification" }, { upsert: true, new: true });
+            res.status(201).json({ verification: verification, message: "Verification requested Successfully" });
             
         }
     

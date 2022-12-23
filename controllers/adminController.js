@@ -1,6 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const interestModel = require("../models/interestModel");
 const userModel = require("../models/userModel");
+const verificationModel = require("../models/verificationModel");
 
 module.exports.getAllUsers = async (req, res) => {
     
@@ -204,10 +205,10 @@ module.exports.getAllInterests = async (req, res) => {
 
 }
 
-module.exports.confirmVerification = [
+module.exports.updateVerificationStatus = [
 
     body("userId").not().isEmpty(),
-    body("isVerified").not().isEmpty(),
+    body("verificationStatus").not().isEmpty(),
   
     async (req, res) => {
   
@@ -216,12 +217,17 @@ module.exports.confirmVerification = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { userId, isVerified, verificationMessage } = req.body;
+        const { userId, verificationStatus, verificationMessage } = req.body;
   
         try {
 
-            const user = await userModel.findOneAndUpdate({ _id: userId }, { $set: { 'verification.isVerified': isVerified, 'verification.verificationMessage': verificationMessage } });
-            res.status(201).json({ user: user, message: "Verification Status Updated" });
+            const verification = await verificationModel.findOneAndUpdate({ user: userId }, { verificationStatus, verificationMessage }, { upsert: true });
+            
+            if (verificationStatus === 'Accepted') {
+                await userModel.findOneAndUpdate({ _id: userId }, { isVerified: true })
+            }
+
+            res.status(201).json({ verification: verification, message: "Verification status updated Successfully" });
             
         }
     
@@ -235,3 +241,58 @@ module.exports.confirmVerification = [
     }
   
 ]
+
+module.exports.getPendingVerificationRequest = async (req, res) => {
+    
+    try {
+
+        let page = parseInt(req.query.page) || 1;
+        let pageSize = parseInt(req.query.pageSize) || 10;
+        let skip = (page - 1) * pageSize;
+
+        let count = await verificationModel.countDocuments({
+            verificationStatus: 'Pending',
+        });
+
+        const verifications = await verificationModel.find({ 
+            verificationStatus: 'Pending',
+        })
+        .populate('user', 'name phoneNumber')
+        .skip(skip)
+        .limit(pageSize);
+
+        res.status(201).json({ count, page, pages: Math.ceil(count / pageSize), verifications: verifications, message: "Verification Requests Fetched Successfully" });
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
+module.exports.getVerificationById = async (req, res) => {
+    
+    try {
+
+        const verification = await verificationModel.findOne({ user: req.params.id }).populate('user', 'images');
+
+        if (verification) {
+            res.status(201).json({ verification: verification, message: "Verification Successfully" });
+        } else {
+            throw Error("Cannot find Verification");
+        }
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
