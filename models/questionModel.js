@@ -15,6 +15,7 @@ const questionsSchema = mongoose.Schema(
         question: {
             type: String,
             required: true,
+            unique: true,
         },
         image: {
             type: String,

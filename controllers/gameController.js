@@ -189,9 +189,18 @@ module.exports.addGameLevel = [
   
         try {
 
-            const game = await gameModel.findOneAndUpdate({ _id: categoryId }, { $addToSet: { levels: { level } } });
+            const exist = await gameModel.findOne({ _id: categoryId, 'levels.level': level });
             
-            res.status(201).json({ level: game, message: "Level created Successfully" });
+
+            if (exist) {
+
+                const game = await gameModel.findOneAndUpdate({ _id: categoryId }, { $addToSet: { levels: { level } } });
+            
+                res.status(201).json({ level: game, message: "Level created Successfully" });
+                
+            } else {
+                res.status(400).json({ message: "Level already exist" });
+            }
             
         }
     
