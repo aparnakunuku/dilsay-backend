@@ -190,9 +190,9 @@ module.exports.addGameLevel = [
         try {
 
             const exist = await gameModel.findOne({ _id: categoryId, 'levels.level': level });
-            
+            console.log(exist)
 
-            if (exist) {
+            if (exist === null) {
 
                 const game = await gameModel.findOneAndUpdate({ _id: categoryId }, { $addToSet: { levels: { level } } });
             
