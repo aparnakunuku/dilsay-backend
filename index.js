@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const dotenv = require("dotenv");
 const upload = require('express-fileupload');
 const authRoutes = require('./routes/authRoutes');
@@ -15,6 +14,7 @@ const chatRoutes = require('./routes/chatRoutes');
 const connectDB = require('./config/db');
 const socket = require("socket.io");
 const https = require('https')
+const fs = require('fs')
 
 const app = express();
 dotenv.config();
