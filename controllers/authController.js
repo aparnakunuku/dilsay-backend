@@ -45,9 +45,7 @@ module.exports.loginUser = [
                 }
 
             }
-
             
-
         } catch (err) {
 
             let error = err.message;
@@ -116,6 +114,7 @@ module.exports.registerUser = [
     body("userType").not().isEmpty(),
     body("longitude").not().isEmpty(),
     body("latitude").not().isEmpty(),
+    body("otp").not().isEmpty(),
   
     async (req, res) => {
   
@@ -124,12 +123,29 @@ module.exports.registerUser = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { name, phoneNumber, gender, longitude, latitude, userType } = req.body;
+        const { name, phoneNumber, gender, longitude, latitude, userType, otp } = req.body;
   
         try {
 
-            const user = await userModel.create({ name, phoneNumber, gender, location:{type: "Point", coordinates: [longitude, latitude]}, userType, IsOnline: true });
-            res.status(201).json({ user: user, message: "User Registered Successfully" });
+            if (otp !== '1234') {
+
+                res.status(400).json({ message: "Incorrect Otp" });
+
+            } else {
+
+                const user = await userModel.create({ name, phoneNumber, gender, location:{type: "Point", coordinates: [longitude, latitude]}, userType, IsOnline: true });
+
+                let isProfileCompleted = false
+
+                if (user?.name && user?.gender && user?.email && user?.jobTitle && user?.dob && user?.bio && user?.name && user?.intrests?.length > 0 && user?.images?.length > 0) {
+                    isProfileCompleted = true
+                }
+
+                const token = await createToken(user);
+
+                res.status(201).json({ user: user, token, isProfileCompleted, message: "User Registered Successfully" });
+
+            }
             
         }
     
@@ -160,7 +176,25 @@ module.exports.sendOtp = [
 
         try {
 
-            res.status(201).json({ message: "Otp Sent successfully" });
+            const user = await userModel.findOne({ phoneNumber });
+
+            if (user) {
+
+                if(login) {
+                    res.status(201).json({ message: "Otp Sent successfully" });
+                } else {
+                    res.status(400).json({ message: "User already exist" });
+                }
+
+            } else {
+
+                if(login) {
+                    res.status(400).json({ message: "User not found" });
+                } else {
+                    res.status(201).json({ message: "Otp Sent successfully" });
+                }
+
+            }
 
         } catch (err) {
 
