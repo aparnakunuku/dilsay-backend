@@ -180,7 +180,7 @@ module.exports.sendOtp = [
 
         try {
             const user = await userModel.findOne({ phoneNumber });
-            const { type } = req.params;
+            const { type } = req.query;
 
             if (user) {
                 if (type == 'login') {
