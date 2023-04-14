@@ -118,7 +118,23 @@ module.exports.getMyProfile = async (req, res) => {
 
         const user = await userModel.find({ _id: req.user._id }).populate('interests subscription.package');
 
-        res.status(201).json({ user: user, message: "Profile details Fetched Successfully" });
+        let isProfileCompleted = false;
+
+        if (
+            user?.name &&
+            user?.gender &&
+            user?.email &&
+            user?.jobTitle &&
+            user?.dob &&
+            user?.bio &&
+            user?.name &&
+            user?.intrests?.length > 0 &&
+            user?.images?.length > 0
+        ) {
+            isProfileCompleted = true;
+        }
+
+        res.status(201).json({ user: user, isProfileCompleted, message: "Profile details Fetched Successfully" });
         
     }
 
