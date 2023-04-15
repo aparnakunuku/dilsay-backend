@@ -19,7 +19,7 @@ module.exports.loginUser = [
             if (otp !== '1234') {
                 res.status(400).json({ message: 'Incorrect Otp' });
             } else {
-                const user = await userModel.findOne({ phoneNumber });
+                let user = await userModel.findOne({ phoneNumber }).lean();
 
                 if (user) {
                     let isProfileCompleted = false;
@@ -32,11 +32,13 @@ module.exports.loginUser = [
                         user?.dob &&
                         user?.bio &&
                         user?.name &&
-                        user?.intrests?.length > 0 &&
+                        // user?.intrests?.length > 0 &&
                         user?.images?.length > 0
                     ) {
                         isProfileCompleted = true;
                     }
+
+                    user.isProfileCompleted = isProfileCompleted;
 
                     const token = await createToken(user);
                     res.status(201).json({
@@ -122,7 +124,7 @@ module.exports.registerUser = [
             if (otp !== '1234') {
                 res.status(400).json({ message: 'Incorrect Otp' });
             } else {
-                const user = await userModel.create({
+                await userModel.create({
                     name,
                     phoneNumber,
                     gender,
@@ -133,7 +135,7 @@ module.exports.registerUser = [
                     userType,
                     IsOnline: true,
                 });
-
+                let user = await userModel.findOne({ phoneNumber }).lean();
                 let isProfileCompleted = false;
 
                 if (
@@ -144,18 +146,17 @@ module.exports.registerUser = [
                     user?.dob &&
                     user?.bio &&
                     user?.name &&
-                    user?.intrests?.length > 0 &&
+                    // user?.intrests?.length > 0 &&
                     user?.images?.length > 0
                 ) {
                     isProfileCompleted = true;
                 }
 
                 const token = await createToken(user);
-
+                user.isProfileCompleted = isProfileCompleted;
                 res.status(201).json({
                     user: user,
                     token,
-                    isProfileCompleted,
                     message: 'User Registered Successfully',
                 });
             }
