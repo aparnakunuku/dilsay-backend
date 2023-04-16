@@ -173,6 +173,7 @@ module.exports.editProfile = [
             let image3Link = req.body?.image3;
             let image4Link = req.body?.image4;
 
+            console.log('before image upload')
             if (req.files?.image1) {
                 const imageRef = ref(
                     storage,
@@ -180,7 +181,7 @@ module.exports.editProfile = [
                         Date.now() + '.' + req.files?.image1.name.split('.')[1]
                     } `
                 );
-
+                    console.log('1')
                 await uploadBytes(imageRef, req.files?.image1.data)
                     .then((snapshot) => {
                         return getDownloadURL(snapshot.ref);
@@ -192,6 +193,7 @@ module.exports.editProfile = [
                         throw Error(error);
                     });
             }
+            console.log('success')
 
             if (req.files?.image2) {
                 const imageRef = ref(
