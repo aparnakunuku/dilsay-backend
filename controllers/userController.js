@@ -130,7 +130,6 @@ module.exports.getMyProfile = async (req, res) => {
             isProfileCompleted = true;
         }
         user.isProfileCompleted = isProfileCompleted;
-        console.log(user.isProfileCompleted)
         res.status(201).json({
             user: user,
             message: 'Profile details Fetched Successfully',
@@ -175,123 +174,124 @@ module.exports.editProfile = [
             let image4Link = req.body?.image4;
 
             console.log('before image upload')
-            console.log('b', req.files?.image1.data)
-            // if (req.files?.image1) {
-            //     const imageRef = ref(
-            //         storage,
-            //         `image/${
-            //             Date.now() + '.' + req.files?.image1.name.split('.')[1]
-            //         } `
-            //     );
-            //         console.log('1')
-            //     await uploadBytes(imageRef, req.files?.image1.data)
-            //         .then((snapshot) => {
-            //             return getDownloadURL(snapshot.ref);
-            //         })
-            //         .then((downloadURL) => {
-            //             image1Link = downloadURL;
-            //         })
-            //         .catch((error) => {
-            //             throw Error(error);
-            //         });
-            // }
-            // console.log('success')
+            if (req.files?.image1) {
+                const imageRef = ref(
+                    storage,
+                    `image/${
+                        Date.now() + '.' + req.files?.image1.name.split('.')[1]
+                    } `
+                );
+                    console.log('1', imageRef)
+                await uploadBytes(imageRef, req.files?.image1.data)
+                    .then((snapshot) => {
+                        console.log('2', snapshot)
+                        return getDownloadURL(snapshot.ref);
+                    })
+                    .then((downloadURL) => {
+                        image1Link = downloadURL;
+                    })
+                    .catch((error) => {
+                        console.log('error',error)
+                        throw Error(error);
+                    });
+            }
+            console.log('success')
 
-            // if (req.files?.image2) {
-            //     const imageRef = ref(
-            //         storage,
-            //         `image/${
-            //             Date.now() + '.' + req.files?.image2.name.split('.')[1]
-            //         } `
-            //     );
+            if (req.files?.image2) {
+                const imageRef = ref(
+                    storage,
+                    `image/${
+                        Date.now() + '.' + req.files?.image2.name.split('.')[1]
+                    } `
+                );
 
-            //     await uploadBytes(imageRef, req.files?.image2.data)
-            //         .then((snapshot) => {
-            //             return getDownloadURL(snapshot.ref);
-            //         })
-            //         .then((downloadURL) => {
-            //             image2Link = downloadURL;
-            //         })
-            //         .catch((error) => {
-            //             throw Error(error);
-            //         });
-            // }
+                await uploadBytes(imageRef, req.files?.image2.data)
+                    .then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    })
+                    .then((downloadURL) => {
+                        image2Link = downloadURL;
+                    })
+                    .catch((error) => {
+                        throw Error(error);
+                    });
+            }
 
-            // if (req.files?.image3) {
-            //     const imageRef = ref(
-            //         storage,
-            //         `image/${
-            //             Date.now() + '.' + req.files?.image3.name.split('.')[1]
-            //         } `
-            //     );
+            if (req.files?.image3) {
+                const imageRef = ref(
+                    storage,
+                    `image/${
+                        Date.now() + '.' + req.files?.image3.name.split('.')[1]
+                    } `
+                );
 
-            //     await uploadBytes(imageRef, req.files?.image3.data)
-            //         .then((snapshot) => {
-            //             return getDownloadURL(snapshot.ref);
-            //         })
-            //         .then((downloadURL) => {
-            //             image3Link = downloadURL;
-            //         })
-            //         .catch((error) => {
-            //             throw Error(error);
-            //         });
-            // }
+                await uploadBytes(imageRef, req.files?.image3.data)
+                    .then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    })
+                    .then((downloadURL) => {
+                        image3Link = downloadURL;
+                    })
+                    .catch((error) => {
+                        throw Error(error);
+                    });
+            }
 
-            // if (req.files?.image4) {
-            //     const imageRef = ref(
-            //         storage,
-            //         `image/${
-            //             Date.now() + '.' + req.files?.image4.name.split('.')[1]
-            //         } `
-            //     );
+            if (req.files?.image4) {
+                const imageRef = ref(
+                    storage,
+                    `image/${
+                        Date.now() + '.' + req.files?.image4.name.split('.')[1]
+                    } `
+                );
 
-            //     await uploadBytes(imageRef, req.files?.image4.data)
-            //         .then((snapshot) => {
-            //             return getDownloadURL(snapshot.ref);
-            //         })
-            //         .then((downloadURL) => {
-            //             image4Link = downloadURL;
-            //         })
-            //         .catch((error) => {
-            //             throw Error(error);
-            //         });
-            // }
+                await uploadBytes(imageRef, req.files?.image4.data)
+                    .then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    })
+                    .then((downloadURL) => {
+                        image4Link = downloadURL;
+                    })
+                    .catch((error) => {
+                        throw Error(error);
+                    });
+            }
 
-            // let image1 = image1Link ? { link: image1Link } : {};
-            // let image2 = image2Link ? { link: image2Link } : null;
-            // let image3 = image3Link ? { link: image3Link } : null;
-            // let image4 = image4Link ? { link: image4Link } : null;
+            let image1 = image1Link ? { link: image1Link } : {};
+            let image2 = image2Link ? { link: image2Link } : null;
+            let image3 = image3Link ? { link: image3Link } : null;
+            let image4 = image4Link ? { link: image4Link } : null;
 
-            // let images = [image1];
+            let images = [image1];
 
-            // if (image2) {
-            //     images.push(image2);
-            // }
-            // if (image3) {
-            //     images.push(image3);
-            // }
-            // if (image4) {
-            //     images.push(image4);
-            // }
+            if (image2) {
+                images.push(image2);
+            }
+            if (image3) {
+                images.push(image3);
+            }
+            if (image4) {
+                images.push(image4);
+            }
 
-            // const user = await userModel.findOneAndUpdate(
-            //     { _id: req.user._id },
-            //     {
-            //         name,
-            //         images,
-            //         gender,
-            //         jobTitle,
-            //         dob,
-            //         email,
-            //         bio,
-            //         interests: JSON.parse(interests),
-            //         isHideAge,
-            //     }
-            // );
-            // res.status(201).json({
-            //     user: user,
-            //     message: 'Profile Updated Successfully',
-            // });
+            const user = await userModel.findOneAndUpdate(
+                { _id: req.user._id },
+                {
+                    name,
+                    images,
+                    gender,
+                    jobTitle,
+                    dob,
+                    email,
+                    bio,
+                    interests: JSON.parse(interests),
+                    isHideAge,
+                }
+            );
+            res.status(201).json({
+                user: user,
+                message: 'Profile Updated Successfully',
+            });
         } catch (err) {
             let error = err.message;
             res.status(400).json({ error: error });
