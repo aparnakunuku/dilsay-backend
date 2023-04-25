@@ -181,19 +181,28 @@ module.exports.editProfile = [
                         Date.now() + '.' + req.files?.image1.name.split('.')[1]
                     } `
                 );
-                    console.log('1', imageRef)
-                await uploadBytes(imageRef, req.files?.image1.data)
-                    .then((snapshot) => {
-                        console.log('2', snapshot)
-                        return getDownloadURL(snapshot.ref);
-                    })
-                    .then((downloadURL) => {
-                        image1Link = downloadURL;
-                    })
-                    .catch((error) => {
-                        console.log('error',error)
-                        throw Error(error);
-                    });
+                console.log('1', imageRef)
+
+                // Upload the file in the bucket storage
+                const snapshot = await uploadBytes(imageRef, req.files?.image1.data);
+                //by using uploadBytesResumable we can control the progress of uploading like pause, resume, cancel
+                console.log('s', snapshot)
+                // Grab the public url
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                image1Link = downloadURL;
+                console.log('d', downloadURL)
+                // await uploadBytes(imageRef, req.files?.image1.data)
+                //     .then((snapshot) => {
+                //         console.log('2', snapshot)
+                //         return getDownloadURL(snapshot.ref);
+                //     })
+                //     .then((downloadURL) => {
+                //         image1Link = downloadURL;
+                //     })
+                //     .catch((error) => {
+                //         console.log('error',error)
+                //         throw Error(error);
+                //     });
             }
             console.log('success')
 

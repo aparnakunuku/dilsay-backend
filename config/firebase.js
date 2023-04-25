@@ -6,12 +6,12 @@ const { getStorage } = require("firebase/storage");
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBbhiDreJ74GVDy167HPN815YkODc3HEGc1",
-  authDomain: "dilsay-6141b.firebaseapp.com1",
-  projectId: "dilsay-6141b1",
-  storageBucket: "dilsay-6141b.appspot.com1",
-  messagingSenderId: "1472182272461",
-  appId: "1:147218227246:web:a8b0ce550d173ee5f1ffbf1"
+  apiKey: "AIzaSyBbhiDreJ74GVDy167HPN815YkODc3HEGc",
+  authDomain: "dilsay-6141b.firebaseapp.com",
+  projectId: "dilsay-6141b",
+  storageBucket: "dilsay-6141b.appspot.com",
+  messagingSenderId: "147218227246",
+  appId: "1:147218227246:web:a8b0ce550d173ee5f1ffbf"
 };
 
 // Initialize Firebase
