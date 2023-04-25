@@ -175,11 +175,10 @@ module.exports.editProfile = [
 
             console.log('before image upload')
             if (req.files?.image1) {
+                console.log(storage)
                 const imageRef = ref(
                     storage,
-                    `image/${
-                        Date.now() + '.' + req.files?.image1.name.split('.')[1]
-                    } `
+                    'q'
                 );
                 console.log('1', imageRef)
 
