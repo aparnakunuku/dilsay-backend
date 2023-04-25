@@ -37,15 +37,15 @@ app.use('/api/v1/chat', chatRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-var cert = fs.readFileSync('./ssl/cert.pem');
-var key = fs.readFileSync('./ssl/privkey.pem');
-var chain = fs.readFileSync('./ssl/chain.pem');
+// var cert = fs.readFileSync('./ssl/cert.pem');
+// var key = fs.readFileSync('./ssl/privkey.pem');
+// var chain = fs.readFileSync('./ssl/chain.pem');
 
-var sslOptions = { key: key, cert: cert, ca: chain };
+// var sslOptions = { key: key, cert: cert, ca: chain };
 
-var httpsApp = https.createServer(sslOptions, app);
+// var httpsApp = https.createServer(sslOptions, app);
 
-const server = httpsApp.listen(PORT, () =>
+const server = app.listen(PORT, () =>
     console.log(`Server is running on port: ${PORT}`)
 );
 
