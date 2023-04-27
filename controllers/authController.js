@@ -75,7 +75,7 @@ module.exports.loginAdmin = [
             if (password !== 'Dilsay@2022') {
                 res.status(400).json({ message: 'Incorrect Password' });
             } else {
-                const user = await userModel.findOne({ email });
+                const user = await userModel.findOne({ email }).lean();
 
                 if (user) {
                     const token = await createToken(user);

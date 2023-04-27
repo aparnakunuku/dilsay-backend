@@ -8,13 +8,14 @@ const notificationModel = require('../models/notificationModel');
 const chatModel = require('../models/chatModel');
 const messageModel = require('../models/messageModel');
 const verificationModel = require('../models/verificationModel');
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const s3Client = require('../config/s3');
 
 module.exports.showAllProfiles = async (req, res) => {
     try {
         let page = parseInt(req.query.page) || 1;
         let pageSize = parseInt(req.query.pageSize) || 10;
         let skip = (page - 1) * pageSize;
-
         let rejected = { _id: { $nin: req?.user?.rejected } };
         let blocked = { _id: { $nin: req?.user?.blocked } };
         let blockedBy = { _id: { $nin: req?.user?.blockedBy } };
@@ -173,96 +174,85 @@ module.exports.editProfile = [
             let image3Link = req.body?.image3;
             let image4Link = req.body?.image4;
 
-            console.log('before image upload')
             if (req.files?.image1) {
-                console.log(storage)
-                const imageRef = ref(
-                    storage,
-                    'q'
-                );
-                console.log('1', imageRef)
 
-                // Upload the file in the bucket storage
-                const snapshot = await uploadBytes(imageRef, req.files?.image1.data);
-                //by using uploadBytesResumable we can control the progress of uploading like pause, resume, cancel
-                console.log('s', snapshot)
-                // Grab the public url
-                const downloadURL = await getDownloadURL(snapshot.ref);
-                image1Link = downloadURL;
-                console.log('d', downloadURL)
-                // await uploadBytes(imageRef, req.files?.image1.data)
-                //     .then((snapshot) => {
-                //         console.log('2', snapshot)
-                //         return getDownloadURL(snapshot.ref);
-                //     })
-                //     .then((downloadURL) => {
-                //         image1Link = downloadURL;
-                //     })
-                //     .catch((error) => {
-                //         console.log('error',error)
-                //         throw Error(error);
-                //     });
+                const key = `image/${
+                    Date.now() + '-' + req.files?.image1.name
+                }`
+
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.image1.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                image1Link = url
             }
-            console.log('success')
 
             if (req.files?.image2) {
-                const imageRef = ref(
-                    storage,
-                    `image/${
-                        Date.now() + '.' + req.files?.image2.name.split('.')[1]
-                    } `
-                );
+                const key = `image/${
+                    Date.now() + '-' + req.files?.image2.name
+                }`
 
-                await uploadBytes(imageRef, req.files?.image2.data)
-                    .then((snapshot) => {
-                        return getDownloadURL(snapshot.ref);
-                    })
-                    .then((downloadURL) => {
-                        image2Link = downloadURL;
-                    })
-                    .catch((error) => {
-                        throw Error(error);
-                    });
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.image2.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                image2Link = url
             }
 
             if (req.files?.image3) {
-                const imageRef = ref(
-                    storage,
-                    `image/${
-                        Date.now() + '.' + req.files?.image3.name.split('.')[1]
-                    } `
-                );
+                const key = `image/${
+                    Date.now() + '-' + req.files?.image3.name
+                }`
 
-                await uploadBytes(imageRef, req.files?.image3.data)
-                    .then((snapshot) => {
-                        return getDownloadURL(snapshot.ref);
-                    })
-                    .then((downloadURL) => {
-                        image3Link = downloadURL;
-                    })
-                    .catch((error) => {
-                        throw Error(error);
-                    });
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.image3.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                image3Link = url
             }
 
             if (req.files?.image4) {
-                const imageRef = ref(
-                    storage,
-                    `image/${
-                        Date.now() + '.' + req.files?.image4.name.split('.')[1]
-                    } `
-                );
+                const key = `image/${
+                    Date.now() + '-' + req.files?.image4.name
+                }`
 
-                await uploadBytes(imageRef, req.files?.image4.data)
-                    .then((snapshot) => {
-                        return getDownloadURL(snapshot.ref);
-                    })
-                    .then((downloadURL) => {
-                        image4Link = downloadURL;
-                    })
-                    .catch((error) => {
-                        throw Error(error);
-                    });
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.image4.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                image4Link = url
             }
 
             let image1 = image1Link ? { link: image1Link } : {};
@@ -294,7 +284,8 @@ module.exports.editProfile = [
                     bio,
                     interests: JSON.parse(interests),
                     isHideAge,
-                }
+                },
+                { new: true }
             );
             res.status(201).json({
                 user: user,
