@@ -1,7 +1,5 @@
 const { body, validationResult } = require('express-validator');
 const userModel = require('../models/userModel');
-const { ref, uploadBytes, getDownloadURL } = require('firebase/storage');
-const { storage } = require('../config/firebase');
 const inviteModel = require('../models/inviteModel');
 const gameInfoModel = require('../models/gameInfoModel');
 const notificationModel = require('../models/notificationModel');
@@ -390,23 +388,25 @@ module.exports.verifyProfile = [
             let imageLink = req.body?.image;
 
             if (req.files?.image) {
-                const imageRef = ref(
-                    storage,
-                    `verification-image/${
-                        Date.now() + '.' + req.files?.image.name.split('.')[1]
-                    } `
-                );
 
-                await uploadBytes(imageRef, req.files?.image.data)
-                    .then((snapshot) => {
-                        return getDownloadURL(snapshot.ref);
-                    })
-                    .then((downloadURL) => {
-                        imageLink = downloadURL;
-                    })
-                    .catch((error) => {
-                        throw Error(error);
-                    });
+                const key = `verification-image/${
+                    Date.now() + '-' + req.files?.image.name
+                }`
+
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.image.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                imageLink = url
+
             }
 
             const verification = await verificationModel.findOneAndUpdate(

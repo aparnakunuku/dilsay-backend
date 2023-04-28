@@ -1,7 +1,5 @@
 const { body, validationResult } = require("express-validator");
 const musicCategoryModel = require("../models/musicCategoryModel");
-const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
-const { storage } = require("../config/firebase");
 const musicModel = require("../models/musicModel");
 const movieModel = require("../models/movieModel");
 
@@ -166,18 +164,25 @@ module.exports.addMusic = [
   
         try {
 
-            const audioRef = ref(storage, `music/${ Date.now() + '.' + audio.name.split('.')[1]} `);
             let audioLink 
-            await uploadBytes(audioRef, audio.data)
-            .then(snapshot => {
-                return getDownloadURL(snapshot.ref)
-            })
-            .then(downloadURL => {
-                audioLink = downloadURL
-            })
-            .catch(error => {
-                throw Error(error);
-            })
+
+            const key = `music/${
+                Date.now() + '-' + audio.name
+            }`
+
+            const command = new PutObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET_NAME,
+                Key: key,
+                Body: audio.data,
+            });
+              
+            const [res, region] = await Promise.all([
+            s3Client.send(command),
+            s3Client.config.region(),
+            ]);
+            
+            const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+            audioLink = url
 
             const music = await musicModel.create({ musicName, movieName: movieId, categoryName: categoryId, audioLink });
             res.status(201).json({ music: music, message: "Music created Successfully" });
@@ -214,18 +219,25 @@ module.exports.updateMusic = [
             let audioLink = req.body?.audio;
 
             if (req.files?.audio) {
-                const audioRef = ref(storage, `music/${ Date.now() + '.' + req.files?.audio.name.split('.')[1]} `);
+
+                const key = `music/${
+                    Date.now() + '-' + req.files?.audio.name
+                }`
+    
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.audio.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
                 
-                await uploadBytes(audioRef, req.files?.audio.data)
-                    .then(snapshot => {
-                        return getDownloadURL(snapshot.ref)
-                    })
-                    .then(downloadURL => {
-                        audioLink = downloadURL
-                    })
-                    .catch(error => {
-                        throw Error(error);
-                    })
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                audioLink = url
+                
             }
 
             const music = await musicModel.findOneAndUpdate({ _id: req?.body?.musicId }, { musicName: req?.body?.musicName, audioLink, movieName: req?.body?.movieId, categoryName: req?.body?.categoryId });
@@ -404,18 +416,25 @@ module.exports.addMovie = [
   
         try {
 
-            const imageRef = ref(storage, `movie/${ Date.now() + '.' + image.name.split('.')[1]} `);
-            let imageLink 
-            await uploadBytes(imageRef, image.data)
-            .then(snapshot => {
-                return getDownloadURL(snapshot.ref)
-            })
-            .then(downloadURL => {
-                imageLink = downloadURL
-            })
-            .catch(error => {
-                throw Error(error);
-            })
+            let imageLink;
+
+            const key = `movie/${
+                Date.now() + '-' + image.name
+            }`
+
+            const command = new PutObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET_NAME,
+                Key: key,
+                Body: image.data,
+            });
+              
+            const [res, region] = await Promise.all([
+            s3Client.send(command),
+            s3Client.config.region(),
+            ]);
+            
+            const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+            imageLink = url
 
             const movie = await movieModel.create({ movieName, image: imageLink });
             res.status(201).json({ movie: movie, message: "Movie created Successfully" });
@@ -450,18 +469,25 @@ module.exports.updateMovie = [
             let imageLink = req.body?.image;
 
             if (req.files?.image) {
-                const imageRef = ref(storage, `movie/${ Date.now() + '.' + req.files?.image.name.split('.')[1]} `);
+
+                const key = `movie/${
+                    Date.now() + '-' + req.files?.image.name
+                }`
+    
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.image.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
                 
-                await uploadBytes(imageRef, req.files?.image.data)
-                    .then(snapshot => {
-                        return getDownloadURL(snapshot.ref)
-                    })
-                    .then(downloadURL => {
-                        imageLink = downloadURL
-                    })
-                    .catch(error => {
-                        throw Error(error);
-                    })
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                imageLink = url
+                
             }
 
             const movie = await movieModel.findOneAndUpdate({ _id: req?.body?.movieId }, { movieName: req?.body?.movieName, image: imageLink });

@@ -2,9 +2,6 @@ const { body, validationResult } = require("express-validator");
 const chatModel = require("../models/chatModel");
 const messageModel = require("../models/messageModel");
 const userModel = require("../models/userModel");
-const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
-const { storage } = require("../config/firebase");
-
 module.exports.accessChat = [
 
     body("userId").not().isEmpty(),
@@ -109,18 +106,25 @@ module.exports.sendMessage = [
             let mes = req.body?.body;
 
             if (req.files?.media) {
-                const mediaRef = ref(storage, `chat-media/${ Date.now() + '.' + req.files?.media.name.split('.')[1]} `);
+
+                const key = `chat-media/${
+                    Date.now() + '-' + req.files?.media.name
+                }`
+
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.media.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
                 
-                await uploadBytes(mediaRef, req.files?.media.data)
-                    .then(snapshot => {
-                        return getDownloadURL(snapshot.ref)
-                    })
-                    .then(downloadURL => {
-                        mes = downloadURL
-                    })
-                    .catch(error => {
-                        throw Error(error);
-                    })
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                mes = url
+
             }
 
             const createdMessage = await messageModel.create({ chat: chatId, body: mes, sender: req.user._id, refMessage, type });
