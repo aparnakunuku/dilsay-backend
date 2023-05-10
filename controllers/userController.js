@@ -67,6 +67,7 @@ module.exports.showAllProfiles = async (req, res) => {
             })
             .skip(skip)
             .limit(pageSize)
+            .populate('interests')
             .lean();
 
         for (let i = 0; i < users.length; i++) {

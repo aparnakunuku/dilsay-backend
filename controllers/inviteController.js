@@ -58,7 +58,7 @@ module.exports.getAllInvitesSent = async (req, res) => {
     
     try {
 
-        const invites = await inviteModel.find({ sentBy: req.user._id, inviteStatus: 'Pending' });
+        const invites = await inviteModel.find({ sentBy: req.user._id, inviteStatus: 'Pending' }).populate('sentTo');
 
         res.status(201).json({ invites: invites, message: "Sent Invites Fetched Successfully" });
         
@@ -77,7 +77,7 @@ module.exports.getAllInvitesRecieved = async (req, res) => {
     
     try {
 
-        const invites = await inviteModel.find({ sentTo: req.user._id, inviteStatus: 'Pending' });
+        const invites = await inviteModel.find({ sentTo: req.user._id, inviteStatus: 'Pending' }).populate('sentBy');
 
         res.status(201).json({ invites: invites, message: "Recieved Invites Fetched Successfully" });
         
