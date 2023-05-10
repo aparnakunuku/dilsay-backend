@@ -124,7 +124,7 @@ module.exports.getMyProfile = async (req, res) => {
             user?.dob &&
             user?.bio &&
             user?.name &&
-            // user?.intrests?.length > 0 &&
+            user?.intrests?.length > 0 &&
             user?.images?.length > 0
         ) {
             isProfileCompleted = true;
@@ -172,6 +172,7 @@ module.exports.editProfile = [
             let image2Link = req.body?.image2;
             let image3Link = req.body?.image3;
             let image4Link = req.body?.image4;
+            let image5Link = req.body?.image5;
 
             if (req.files?.image1) {
 
@@ -254,10 +255,31 @@ module.exports.editProfile = [
                 image4Link = url
             }
 
+            if (req.files?.image5) {
+                const key = `image/${
+                    Date.now() + '-' + req.files?.image5.name
+                }`
+
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: req.files?.image5.data,
+                });
+                  
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                image5Link = url
+            }
+
             let image1 = image1Link ? { link: image1Link } : {};
             let image2 = image2Link ? { link: image2Link } : null;
             let image3 = image3Link ? { link: image3Link } : null;
             let image4 = image4Link ? { link: image4Link } : null;
+            let image5 = image5Link ? { link: image5Link } : null;
 
             let images = [image1];
 
@@ -269,6 +291,9 @@ module.exports.editProfile = [
             }
             if (image4) {
                 images.push(image4);
+            }
+            if (image5) {
+                images.push(image5);
             }
 
             const user = await userModel.findOneAndUpdate(
