@@ -145,6 +145,8 @@ module.exports.getAllMatches = async (req, res) => {
     
     try {
 
+        let search = req.query.search || '';
+
         const invites = await inviteModel.find({  
             $or: [{sentTo: req.user._id}, {sentBy: req.user._id}], inviteStatus: 'Accepted'
         })
@@ -153,18 +155,21 @@ module.exports.getAllMatches = async (req, res) => {
         })
         .lean()
 
-        for(let i = 0; i < invites.length; i++) {
-            
-            if (invites[i].sentTo.name.toLowerCase() === req.user.name.toLowerCase() && invites[i].sentBy.name.toLowerCase().includes(search.toLowerCase())) {
-                delete invites[i].sentTo
-                invites[i].user = invites[i].sentBy
-                delete invites[i].sentBy
-            } else if (invites[i].sentBy.name.toLowerCase() === req.user.name.toLowerCase() && invites[i].sentTo.name.toLowerCase().includes(search.toLowerCase())) {
-                delete invites[i].sentBy
-                invites[i].user = invites[i].sentTo
-                delete invites[i].sentTo
-            }
+        if (search !== '') {
 
+            for(let i = 0; i < invites.length; i++) {
+            
+                if (invites[i].sentTo.name.toLowerCase() === req.user.name.toLowerCase() && invites[i].sentBy.name.toLowerCase().includes(search.toLowerCase())) {
+                    delete invites[i].sentTo
+                    invites[i].user = invites[i].sentBy
+                    delete invites[i].sentBy
+                } else if (invites[i].sentBy.name.toLowerCase() === req.user.name.toLowerCase() && invites[i].sentTo.name.toLowerCase().includes(search.toLowerCase())) {
+                    delete invites[i].sentBy
+                    invites[i].user = invites[i].sentTo
+                    delete invites[i].sentTo
+                }
+
+            }
         }
 
         res.status(201).json({ matches: invites, message: "Matches Fetched Successfully" });
