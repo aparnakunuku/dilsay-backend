@@ -24,8 +24,7 @@ module.exports.sendInvite = [
             let date = new Date();
             date.setDate(date.getDate() - 1);
 
-            if (user.invitesSentCount <= 25 && date > user?.invitesSentTime) {
-                
+            if (user.invitesSentCount == 25 && date > user?.invitesSentTime) {
                 res.status(400).json({ message: "Max invites already sent for the day" });
             } else {
 
@@ -58,7 +57,7 @@ module.exports.getAllInvitesSent = async (req, res) => {
     
     try {
 
-        const invites = await inviteModel.find({ sentBy: req.user._id, inviteStatus: 'Pending' }).populate('sentTo');
+        const invites = await inviteModel.find({ sentBy: req.user._id, inviteStatus: 'Pending' });
 
         res.status(201).json({ invites: invites, message: "Sent Invites Fetched Successfully" });
         
