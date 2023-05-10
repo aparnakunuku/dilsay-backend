@@ -145,8 +145,6 @@ module.exports.getAllMatches = async (req, res) => {
     
     try {
 
-        co 
-
         const invites = await inviteModel.find({  
             $or: [{sentTo: req.user._id}, {sentBy: req.user._id}], inviteStatus: 'Accepted'
         })
