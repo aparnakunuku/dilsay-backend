@@ -123,12 +123,12 @@ module.exports.getMyProfile = async (req, res) => {
             user?.jobTitle &&
             user?.dob &&
             user?.bio &&
-            user?.name &&
-            user?.intrests?.length > 0 &&
+            user?.interests?.length > 0 &&
             user?.images?.length > 0
         ) {
             isProfileCompleted = true;
         }
+        
         user.isProfileCompleted = isProfileCompleted;
         res.status(201).json({
             user: user,

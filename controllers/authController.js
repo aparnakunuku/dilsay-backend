@@ -31,8 +31,7 @@ module.exports.loginUser = [
                         user?.jobTitle &&
                         user?.dob &&
                         user?.bio &&
-                        user?.name &&
-                        // user?.intrests?.length > 0 &&
+                        user?.interests?.length > 0 &&
                         user?.images?.length > 0
                     ) {
                         isProfileCompleted = true;
@@ -145,8 +144,7 @@ module.exports.registerUser = [
                     user?.jobTitle &&
                     user?.dob &&
                     user?.bio &&
-                    user?.name &&
-                    // user?.intrests?.length > 0 &&
+                    user?.interests?.length > 0 &&
                     user?.images?.length > 0
                 ) {
                     isProfileCompleted = true;
