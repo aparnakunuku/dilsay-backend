@@ -677,11 +677,17 @@ module.exports.likeImage = async (req, res) => {
                     body: `${req.user.name} liked your pic.`,
                 });
             }
+
+            const updatedUser = await user.save();
+
+            res.status(201).json({ updatedUser, isLiked });
+        } else {
+            res.status(404).json({
+                message: 'User not found',
+            });
         }
 
-        const updatedUser = await user.save();
-
-        res.status(201).json({ updatedUser, isLiked });
+        
     } catch (err) {
         let error = err.message;
         res.status(400).json({ error: error });
@@ -721,11 +727,17 @@ module.exports.loveImage = async (req, res) => {
                     body: `${req.user.name} loved your pic.`,
                 });
             }
+
+            const updatedUser = await user.save();
+
+            res.status(201).json({ updatedUser, isLoved });
+        } else {
+            res.status(404).json({
+                message: 'User not found',
+            });
         }
 
-        const updatedUser = await user.save();
-
-        res.status(201).json({ updatedUser, isLoved });
+        
     } catch (err) {
         let error = err.message;
         res.status(400).json({ error: error });
