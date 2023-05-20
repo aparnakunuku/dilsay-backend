@@ -145,8 +145,6 @@ module.exports.editProfile = [
     body('gender').not().isEmpty(),
     body('jobTitle').not().isEmpty(),
     body('dob').not().isEmpty(),
-    body('email').not().isEmpty(),
-    body('bio').not().isEmpty(),
     body('interests').not().isEmpty(),
     body('isHideAge').not().isEmpty(),
 
