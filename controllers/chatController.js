@@ -2,6 +2,9 @@ const { body, validationResult } = require("express-validator");
 const chatModel = require("../models/chatModel");
 const messageModel = require("../models/messageModel");
 const userModel = require("../models/userModel");
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const s3Client = require('../config/s3');
+
 module.exports.accessChat = [
 
     body("userId").not().isEmpty(),
