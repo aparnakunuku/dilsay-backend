@@ -3,6 +3,7 @@ const subscriptionModel = require("../models/subscriptionModel");
 
 module.exports.createSubscription = [
 
+    body("title").not().isEmpty(),
     body("price").not().isEmpty(),
     body("validityPeriod").not().isEmpty(),
     body("discount").not().isEmpty(),
@@ -16,11 +17,11 @@ module.exports.createSubscription = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { price, validityPeriod, discount, isActive, features } = req.body;
+        const { title, price, validityPeriod, discount, isActive, features } = req.body;
   
         try {
 
-            const subscription = await subscriptionModel.create({ price, validityPeriod, discount, isActive, features });
+            const subscription = await subscriptionModel.create({ title, price, validityPeriod, discount, isActive, features });
             res.status(201).json({ subscription: subscription, message: "Subscription created Successfully" });
             
         }
@@ -38,6 +39,7 @@ module.exports.createSubscription = [
 
 module.exports.updateSubscription = [
 
+    body("title").not().isEmpty(),
     body("subscriptionId").not().isEmpty(),
     body("price").not().isEmpty(),
     body("validityPeriod").not().isEmpty(),
@@ -52,11 +54,11 @@ module.exports.updateSubscription = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { subscriptionId, price, validityPeriod, discount, isActive, features } = req.body;
+        const { subscriptionId, title, price, validityPeriod, discount, isActive, features } = req.body;
   
         try {
 
-            const subscription = await subscriptionModel.findOneAndUpdate({ _id: subscriptionId }, { price, validityPeriod, discount, isActive, features });
+            const subscription = await subscriptionModel.findOneAndUpdate({ _id: subscriptionId }, { title, price, validityPeriod, discount, isActive, features });
             res.status(201).json({ subscription: subscription, message: "Subscription updated Successfully" });
             
         }
