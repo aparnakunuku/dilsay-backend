@@ -2,6 +2,8 @@ const { body, validationResult } = require("express-validator");
 const musicCategoryModel = require("../models/musicCategoryModel");
 const musicModel = require("../models/musicModel");
 const movieModel = require("../models/movieModel");
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
+const s3Client = require('../config/s3');
 
 module.exports.addMusicCategory = [
 
