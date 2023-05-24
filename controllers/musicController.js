@@ -166,25 +166,29 @@ module.exports.addMusic = [
   
         try {
 
-            let audioLink 
+            let audioLink;
 
-            const key = `music/${
-                Date.now() + '-' + audio.name
-            }`
+            if (req.files?.audio) {
 
-            const command = new PutObjectCommand({
-                Bucket: process.env.AWS_S3_BUCKET_NAME,
-                Key: key,
-                Body: audio.data,
-            });
-              
-            const [res, region] = await Promise.all([
-            s3Client.send(command),
-            s3Client.config.region(),
-            ]);
-            
-            const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
-            audioLink = url
+                const key = `music/${
+                    Date.now() + '-' + audio.name
+                }`
+
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: audio.data,
+                });
+                
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                audioLink = url
+
+            }
 
             const music = await musicModel.create({ musicName, movieName: movieId, categoryName: categoryId, audioLink });
             res.status(201).json({ music: music, message: "Music created Successfully" });
@@ -420,25 +424,30 @@ module.exports.addMovie = [
 
             let imageLink;
 
-            const key = `movie/${
-                Date.now() + '-' + image.name
-            }`
+            if (req.files?.image) {
 
-            const command = new PutObjectCommand({
-                Bucket: process.env.AWS_S3_BUCKET_NAME,
-                Key: key,
-                Body: image.data,
-            });
-              
-            const [res, region] = await Promise.all([
-            s3Client.send(command),
-            s3Client.config.region(),
-            ]);
-            
-            const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
-            imageLink = url
+                const key = `movie/${
+                    Date.now() + '-' + image.name
+                }`
+
+                const command = new PutObjectCommand({
+                    Bucket: process.env.AWS_S3_BUCKET_NAME,
+                    Key: key,
+                    Body: image.data,
+                });
+                
+                const [res, region] = await Promise.all([
+                s3Client.send(command),
+                s3Client.config.region(),
+                ]);
+                
+                const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${region}.amazonaws.com/${key}`
+                imageLink = url
+
+            }
 
             const movie = await movieModel.create({ movieName, image: imageLink });
+
             res.status(201).json({ movie: movie, message: "Movie created Successfully" });
             
         }
