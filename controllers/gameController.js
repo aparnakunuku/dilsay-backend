@@ -173,6 +173,52 @@ module.exports.getAllGameLevels = async (req, res) => {
 
 }
 
+module.exports.getAllGameLevelsForUser = [
+
+    body("gameId").not().isEmpty(),
+    body("user1").not().isEmpty(),
+    body("user2").not().isEmpty(),
+    
+    async (req, res) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { gameId, user1, user2 } = req.body;
+    
+        try {
+
+            const gameLevels = await gameModel.find({ 
+                _id: gameId 
+            })
+            .select('levels')
+            .skip(skip)
+            .limit(pageSize);
+
+            const game = await gameInfoModel.findOne({ gameCategory, $or: [ { user1: user1 }, { user2: user2 } ], $or: [ { user1: user2 }, { user2: user1 } ] });
+
+            let currentLevel = 1;
+
+            if (game) {
+                currentLevel = game.gameLevel
+            }
+
+            res.status(201).json({ gameLevels: gameLevels, currentLevel, message: "Game Levels Fetched Successfully" });
+            
+        }
+
+        catch (err) {
+
+            let error = err.message;
+            res.status(400).json({ error: error });
+
+        }
+
+    }
+]
+
 module.exports.addGameLevel = [
 
     body("categoryId").not().isEmpty(),
@@ -430,6 +476,39 @@ module.exports.startGame = [
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} requested for game category change.` })
 
             res.status(201).json({ game: game, message: "Game started Successfully" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]
+
+module.exports.checkGameRequest = [
+
+    body("gameCategory").not().isEmpty(),
+    body("userId").not().isEmpty(),
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { gameCategory, userId } = req.body;
+  
+        try {
+
+            const game = await gameInfoModel.findOne({ gameCategory, status: 'Pending', $and: [ { user1: userId }, { user2: req.user._id } ] });
+          
+            res.status(201).json({ game: game, message: "Game request Successfull" });
             
         }
     

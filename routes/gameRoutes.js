@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { addGameLevel, addGameCategory, getAllGameCategories, getAllGameLevels, deleteGameCategory, deleteGameLevel, getAllQuestions, startGame, answerGame, getGameQuestions, acceptOrRejectGameInvite, updateGameCategory, getGameCategoryById, updateQuestion, addQuestion, getQuestionById, deleteQuestion } = require("../controllers/gameController");
+const { addGameLevel, addGameCategory, getAllGameCategories, getAllGameLevels, deleteGameCategory, deleteGameLevel, getAllQuestions, startGame, answerGame, getGameQuestions, acceptOrRejectGameInvite, updateGameCategory, getGameCategoryById, updateQuestion, addQuestion, getQuestionById, deleteQuestion, checkGameRequest, getAllGameLevelsForUser } = require("../controllers/gameController");
 const { isAuth, isSuperAdmin } = require("../middlewares/verifyToken");
 
 const gameRoutes = Router();
@@ -17,7 +17,9 @@ gameRoutes.post("/updateQuestion", isAuth, isSuperAdmin, updateQuestion);
 gameRoutes.get("/getQuestionById/:id", isAuth, isSuperAdmin, getQuestionById);
 gameRoutes.get("/deleteQuestion/:id", isAuth, isSuperAdmin, deleteQuestion);
 gameRoutes.post("/getAllQuestions", isAuth, getAllQuestions);
+gameRoutes.post("/getAllGameLevels", isAuth, getAllGameLevelsForUser);
 gameRoutes.post("/startGame", isAuth, startGame);
+gameRoutes.post("/checkGameRequest", isAuth, checkGameRequest);
 gameRoutes.post("/acceptOrRejectGameInvite", isAuth, acceptOrRejectGameInvite);
 gameRoutes.post("/answerGame", isAuth, answerGame);
 gameRoutes.post("/getGameQuestions", isAuth,getGameQuestions);
