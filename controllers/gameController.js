@@ -176,7 +176,6 @@ module.exports.getAllGameLevels = async (req, res) => {
 module.exports.getAllGameLevelsForUser = [
 
     body("gameCategory").not().isEmpty(),
-    body("gameId").not().isEmpty(),
     body("user1").not().isEmpty(),
     body("user2").not().isEmpty(),
     
@@ -187,12 +186,12 @@ module.exports.getAllGameLevelsForUser = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { gameId, gameCategory, user1, user2 } = req.body;
+        const { gameCategory, user1, user2 } = req.body;
     
         try {
 
             const gameLevels = await gameModel.find({ 
-                _id: gameId 
+                _id: gameCategory 
             })
             .select('levels')
 
