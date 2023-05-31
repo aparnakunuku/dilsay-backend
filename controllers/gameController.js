@@ -194,8 +194,6 @@ module.exports.getAllGameLevelsForUser = [
                 _id: gameId 
             })
             .select('levels')
-            .skip(skip)
-            .limit(pageSize);
 
             const game = await gameInfoModel.findOne({ gameCategory, $or: [ { user1: user1 }, { user2: user2 } ], $or: [ { user1: user2 }, { user2: user1 } ] });
 
