@@ -175,6 +175,7 @@ module.exports.getAllGameLevels = async (req, res) => {
 
 module.exports.getAllGameLevelsForUser = [
 
+    body("gameCategory").not().isEmpty(),
     body("gameId").not().isEmpty(),
     body("user1").not().isEmpty(),
     body("user2").not().isEmpty(),
@@ -186,7 +187,7 @@ module.exports.getAllGameLevelsForUser = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { gameId, user1, user2 } = req.body;
+        const { gameId, gameCategory, user1, user2 } = req.body;
     
         try {
 
