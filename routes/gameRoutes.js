@@ -17,7 +17,7 @@ gameRoutes.post("/updateQuestion", isAuth, isSuperAdmin, updateQuestion);
 gameRoutes.get("/getQuestionById/:id", isAuth, isSuperAdmin, getQuestionById);
 gameRoutes.get("/deleteQuestion/:id", isAuth, isSuperAdmin, deleteQuestion);
 gameRoutes.post("/getAllQuestions", isAuth, getAllQuestions);
-gameRoutes.post("/getAllGameLevels", isAuth, getAllGameLevelsForUser);
+gameRoutes.post("/getAllGameLevelsForUser", isAuth, getAllGameLevelsForUser);
 gameRoutes.post("/startGame", isAuth, startGame);
 gameRoutes.post("/checkGameRequest", isAuth, checkGameRequest);
 gameRoutes.post("/acceptOrRejectGameInvite", isAuth, acceptOrRejectGameInvite);
