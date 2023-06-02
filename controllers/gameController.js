@@ -579,7 +579,10 @@ module.exports.answerGame = [
 
             const game = await gameInfoModel.findOne({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] });
 
-            if (game.tries >= 2) {
+            if (!game) {
+                res.status(400).json({ message: "Game doesnt exist!" });
+            }
+            else if (game.tries >= 2) {
                 res.status(400).json({ message: "Max tries exceeded" });
             }
             else if (game.answers && game.answers.length > 0 ) {
