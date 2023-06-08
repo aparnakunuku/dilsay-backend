@@ -143,7 +143,7 @@ module.exports.sendMessage = [
             
             await chatModel.findByIdAndUpdate(chatId, { latestMessage: message._id });
 
-            res.status(201).json({ sentMessage: message, message: "Message sent Successfully" });
+            res.status(201).json({ message: createdMessage, sentMessage: message, message: "Message sent Successfully" });
             
         }
     
