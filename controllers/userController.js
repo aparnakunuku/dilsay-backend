@@ -630,7 +630,7 @@ module.exports.getAllNotifications = async (req, res) => {
     try {
         const notifications = await notificationModel.find({
             user: req.user._id,
-        });
+        }).populate("users", "-password");
 
         res.status(201).json({
             notifications: notifications,
