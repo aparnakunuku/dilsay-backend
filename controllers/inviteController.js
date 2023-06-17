@@ -29,6 +29,10 @@ module.exports.sendInvite = [
             } else {
 
                 const invite = await inviteModel.create({ sentTo, sentBy: req.user._id, pickupLine });
+                const user = await userModel.findOneAndUpdate(
+                    { _id: req.user._id },
+                    { $push: { invitedProfiles: sentTo } }
+                );
                 const notification = await notificationModel.create({ user: sentTo, refUser: req.user._id, body: `${user.name} sent you an invite.` })
                 if (user.invitesSentCount === 24) {
                     const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { invitesSentTime: Date.now(), $inc: { invitesSentCount: 1 } });

@@ -14,7 +14,8 @@ module.exports.showAllProfiles = async (req, res) => {
         let page = parseInt(req.query.page) || 1;
         let pageSize = parseInt(req.query.pageSize) || 10;
         let skip = (page - 1) * pageSize;
-        let rejected = { _id: { $nin: req?.user?.rejected } };
+        let rejected = { _id: { $nin: req?.user?.rejected } }
+        let invited = { _id: { $nin: req?.user?.invitedProfiles } };
         let blocked = { _id: { $nin: req?.user?.blocked } };
         let blockedBy = { _id: { $nin: req?.user?.blockedBy } };
 
@@ -47,6 +48,7 @@ module.exports.showAllProfiles = async (req, res) => {
                 : {};
 
         let count = await userModel.countDocuments({
+            ...invited,
             ...rejected,
             ...blocked,
             ...blockedBy,
@@ -57,6 +59,7 @@ module.exports.showAllProfiles = async (req, res) => {
 
         const users = await userModel
             .find({
+                ...invited,
                 ...rejected,
                 ...blocked,
                 ...blockedBy,

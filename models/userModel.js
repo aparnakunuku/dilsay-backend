@@ -100,6 +100,10 @@ const userSchema = mongoose.Schema(
             type: ObjectId,
             ref: 'user'
         }],
+        invitedProfiles: [{
+            type: ObjectId,
+            ref: 'user'
+        }],
         blocked: [{
             type: ObjectId,
             ref: 'user'
