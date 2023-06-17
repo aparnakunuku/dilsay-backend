@@ -630,7 +630,7 @@ module.exports.getAllNotifications = async (req, res) => {
     try {
         const notifications = await notificationModel.find({
             user: req.user._id,
-        }).populate("users", "-password");
+        }).populate("refUser", "-password");
 
         res.status(201).json({
             notifications: notifications,
@@ -665,6 +665,11 @@ module.exports.likeImage = async (req, res) => {
                 user.images[i].likes.splice(index, 1);
                 user.images[i].likeCount = user.images[0].likeCount - 1;
                 isLiked = false;
+                const notification = await notificationModel.findOneAndDelete({
+                    user: req.params.userId,
+                    refUser: req.user._id,
+                    imageId: req.params.id,
+                });
             } else {
                 user.images[i].likes.push(req.user._id);
                 user.images[i].likeCount = user.images[0].likeCount + 1;
@@ -672,6 +677,7 @@ module.exports.likeImage = async (req, res) => {
                 const notification = await notificationModel.create({
                     user: req.params.userId,
                     refUser: req.user._id,
+                    imageId: req.params.id,
                     body: `${req.user.name} liked your pic.`,
                 });
             }
@@ -715,6 +721,11 @@ module.exports.loveImage = async (req, res) => {
                 user.images[i].loves.splice(index, 1);
                 user.images[i].loveCount = user.images[0].loveCount - 1;
                 isLoved = false;
+                const notification = await notificationModel.findOneAndDelete({
+                    user: req.params.userId,
+                    refUser: req.user._id,
+                    imageId: req.params.id,
+                });
             } else {
                 user.images[i].loves.push(req.user._id);
                 user.images[i].loveCount = user.images[0].loveCount + 1;
@@ -722,6 +733,7 @@ module.exports.loveImage = async (req, res) => {
                 const notification = await notificationModel.create({
                     user: req.params.userId,
                     refUser: req.user._id,
+                    imageId: req.params.id,
                     body: `${req.user.name} loved your pic.`,
                 });
             }

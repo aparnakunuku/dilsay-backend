@@ -12,6 +12,9 @@ const notificationSchema = mongoose.Schema(
             type: ObjectId,
             ref: 'user',
         },
+        imageId: {
+            type: ObjectId,
+        },
         body: {
             type: String,
             required: true

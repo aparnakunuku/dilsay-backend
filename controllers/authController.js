@@ -27,10 +27,8 @@ module.exports.loginUser = [
                     if (
                         user?.name &&
                         user?.gender &&
-                        user?.email &&
                         user?.jobTitle &&
                         user?.dob &&
-                        user?.bio &&
                         user?.interests?.length > 0 &&
                         user?.images?.length > 0
                     ) {
@@ -140,10 +138,8 @@ module.exports.registerUser = [
                 if (
                     user?.name &&
                     user?.gender &&
-                    user?.email &&
                     user?.jobTitle &&
                     user?.dob &&
-                    user?.bio &&
                     user?.interests?.length > 0 &&
                     user?.images?.length > 0
                 ) {
