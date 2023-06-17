@@ -76,7 +76,6 @@ module.exports.fetchAllChats = async (req, res) => {
             select: "-password",
         });
       
-
         res.status(201).json({ chats: chats, message: "All chats fetched Successfully" });
         
     }

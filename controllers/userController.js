@@ -122,10 +122,8 @@ module.exports.getMyProfile = async (req, res) => {
         if (
             user?.name &&
             user?.gender &&
-            user?.email &&
             user?.jobTitle &&
             user?.dob &&
-            user?.bio &&
             user?.interests?.length > 0 &&
             user?.images?.length > 0
         ) {
