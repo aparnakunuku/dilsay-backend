@@ -15,8 +15,8 @@ module.exports.showAllProfiles = async (req, res) => {
         let pageSize = parseInt(req.query.pageSize) || 10;
         let skip = (page - 1) * pageSize;
 
-        let notInclude = req?.user?.rejected.concat(req?.user?.invitedProfiles,req?.user?.blocked, req?.user?.blockedBy);
-        
+        let notInclude = req?.user?.rejected.concat(req?.user?.rejectedBy, req?.user?.invitedProfiles,req?.user?.blocked, req?.user?.blockedBy);
+        console.log(req?.user?.rejected)
         let distance = req.query.distance || 30;
 
         let sortByDistance = {
