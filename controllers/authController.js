@@ -5,6 +5,7 @@ const userModel = require('../models/userModel');
 module.exports.loginUser = [
     body('phoneNumber').not().isEmpty(),
     body('otp').not().isEmpty(),
+    body('fcmToken').not().isEmpty(),
 
     async (req, res) => {
         const errors = validationResult(req);
@@ -13,13 +14,18 @@ module.exports.loginUser = [
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { phoneNumber, otp } = req.body;
+        const { phoneNumber, otp, fcmToken } = req.body;
 
         try {
             if (otp !== '1234') {
                 res.status(400).json({ message: 'Incorrect Otp' });
             } else {
-                let user = await userModel.findOne({ phoneNumber }).lean();
+
+                const user = await userModel.findOneAndUpdate(
+                    { phoneNumber },
+                    { fcmToken },
+                    { new: true }
+                ).lean();
 
                 if (user) {
                     let isProfileCompleted = false;
@@ -100,6 +106,7 @@ module.exports.registerUser = [
     body('longitude').not().isEmpty(),
     body('latitude').not().isEmpty(),
     body('otp').not().isEmpty(),
+    body('fcmToken').not().isEmpty(),
 
     async (req, res) => {
         const errors = validationResult(req);
@@ -115,6 +122,7 @@ module.exports.registerUser = [
             latitude,
             userType,
             otp,
+            fcmToken
         } = req.body;
 
         try {
@@ -131,6 +139,7 @@ module.exports.registerUser = [
                     },
                     userType,
                     IsOnline: true,
+                    fcmToken
                 });
                 let user = await userModel.findOne({ phoneNumber }).lean();
                 let isProfileCompleted = false;

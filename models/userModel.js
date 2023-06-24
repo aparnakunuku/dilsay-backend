@@ -134,6 +134,9 @@ const userSchema = mongoose.Schema(
             enum: ["Super Admin", "User"],
             required: true
         },
+        fcmToken: {
+            type: String,
+        },
     },
     { timestamps: true }
 );
