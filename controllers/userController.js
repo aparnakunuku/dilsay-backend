@@ -8,6 +8,7 @@ const messageModel = require('../models/messageModel');
 const verificationModel = require('../models/verificationModel');
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const s3Client = require('../config/s3');
+const preferenceModel = require('../models/preferenceModel');
 
 module.exports.showAllProfiles = async (req, res) => {
     try {
@@ -752,3 +753,55 @@ module.exports.loveImage = async (req, res) => {
         res.status(400).json({ error: error });
     }
 };
+
+module.exports.updatePreferences = [
+  
+    async (req, res) => {
+  
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+    
+        const { gender, startAge, endAge, longitude, latitude } = req.body;
+  
+        try {
+
+            const preferences = await preferenceModel.findOneAndUpdate({ user: req.user._id }, { gender, startAge, endAge, longitude, latitude }, { upsert: true });
+            res.status(201).json({ preferences: preferences, message: "Prefernces updated Successfully" });
+            
+        }
+    
+        catch (err) {
+    
+            let error = err.message;
+            res.status(400).json({ error: error });
+    
+        }
+  
+    }
+  
+]
+
+module.exports.getPrefernces = async (req, res) => {
+    
+    try {
+
+        const preferences = await preferenceModel.findOne({ user: req.user._id });
+
+        if (preferences) {
+            res.status(201).json({ preferences: preferences, message: "Preferences fetched Successfully" });
+        } else {
+            throw Error("Cannot find Preferences");
+        }
+        
+    }
+
+    catch (err) {
+
+        let error = err.message;
+        res.status(400).json({ error: error });
+
+    }
+
+}
