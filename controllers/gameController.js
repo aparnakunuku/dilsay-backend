@@ -41,6 +41,7 @@ module.exports.getAllGameCategories = async (req, res) => {
 module.exports.addGameCategory = [
 
     body("category").not().isEmpty(),
+    body("isFree").not().isEmpty(),
   
     async (req, res) => {
   
@@ -49,11 +50,11 @@ module.exports.addGameCategory = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { category } = req.body;
+        const { category, isFree } = req.body;
   
         try {
 
-            const gameCategory = await gameModel.create({ category, levels: [{ level: 1 }] });
+            const gameCategory = await gameModel.create({ category, isFree, levels: [{ level: 1 }] });
 
             
             res.status(201).json({ category: gameCategory, message: "Category created Successfully" });
@@ -75,6 +76,7 @@ module.exports.updateGameCategory = [
 
     body("categoryId").not().isEmpty(),
     body("category").not().isEmpty(),
+    body("isFree").not().isEmpty(),
   
     async (req, res) => {
   
@@ -83,11 +85,11 @@ module.exports.updateGameCategory = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { categoryId, category } = req.body;
+        const { categoryId, category, isFree } = req.body;
   
         try {
 
-            const gameCategory = await gameModel.findOneAndUpdate({ _id: categoryId }, { category });
+            const gameCategory = await gameModel.findOneAndUpdate({ _id: categoryId }, { category, isFree });
 
             
             res.status(201).json({ category: gameCategory, message: "Category updated Successfully" });

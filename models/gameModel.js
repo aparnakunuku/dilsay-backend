@@ -17,6 +17,10 @@ const gameSchema = mongoose.Schema(
             required: true,
             unique: true
         },
+        isFree: {
+            type: Boolean,
+            default: false,
+        },
         levels: [levelSchema]
     },
     { timestamps: true }
