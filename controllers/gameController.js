@@ -506,7 +506,7 @@ module.exports.checkGameRequest = [
   
         try {
 
-            const game = await gameInfoModel.findOne({ gameCategory, status: 'Pending', $and: [ { user1: userId }, { user2: req.user._id } ] });
+            const game = await gameInfoModel.findOne({ gameCategory, $and: [ { user1: userId }, { user2: req.user._id } ] });
           
             res.status(201).json({ game: game, message: "Game request Successfull" });
             
