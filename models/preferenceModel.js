@@ -23,6 +23,9 @@ const preferenceSchema = mongoose.Schema(
         latitude: {
             type: Number,
         },
+        distance: {
+            type: Number,
+        },
         
     },
     { timestamps: true }

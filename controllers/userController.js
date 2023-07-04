@@ -763,11 +763,11 @@ module.exports.updatePreferences = [
             return res.status(400).json({ errors: errors.array() });
         }
     
-        const { gender, startAge, endAge, longitude, latitude } = req.body;
+        const { gender, startAge, endAge, longitude, latitude, distance } = req.body;
   
         try {
 
-            const preferences = await preferenceModel.findOneAndUpdate({ user: req.user._id }, { gender, startAge, endAge, longitude, latitude }, { upsert: true });
+            const preferences = await preferenceModel.findOneAndUpdate({ user: req.user._id }, { gender, startAge, endAge, longitude, latitude, distance }, { upsert: true });
             res.status(201).json({ preferences: preferences, message: "Prefernces updated Successfully" });
             
         }

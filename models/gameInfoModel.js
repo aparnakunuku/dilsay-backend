@@ -48,6 +48,14 @@ const gameInfoSchema = mongoose.Schema(
             enum: ['Pending', 'Accepted', 'Rejected'],
             default: 'Pending'
         },
+        bothUserAnsweredGame: {
+            type: Boolean,
+            default: null
+        },
+        gameAnswersMatched: {
+            type: Boolean,
+            default: null
+        },
         gameLevel: {
             type: Number,
             default: 1,
