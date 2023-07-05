@@ -144,6 +144,10 @@ module.exports.registerUser = [
                 let user = await userModel.findOne({ phoneNumber }).lean();
                 let isProfileCompleted = false;
 
+                let oppGender = (gender === "Male") ? "Female" : "Male"
+
+                const preferences = await preferenceModel.findOneAndUpdate({ user: req.user._id }, { gender : oppGender, startAge: 18, endAge: 22, longitude, latitude, distance: 5 }, { upsert: true });
+
                 if (
                     user?.name &&
                     user?.gender &&
