@@ -22,6 +22,6 @@ gameRoutes.post("/startGame", isAuth, startGame);
 gameRoutes.post("/checkGameRequest", isAuth, checkGameRequest);
 gameRoutes.post("/acceptOrRejectGameInvite", isAuth, acceptOrRejectGameInvite);
 gameRoutes.post("/answerGame", isAuth, answerGame);
-gameRoutes.post("/getGameQuestions", isAuth,getGameQuestions);
+gameRoutes.post("/getGameQuestions", isAuth, getGameQuestions);
 
 module.exports = gameRoutes;

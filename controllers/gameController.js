@@ -664,9 +664,8 @@ module.exports.getGameQuestions = [
             
             } else {
 
-                const questions = await questionModel.findOne({ gameCategory: categoryId, level });
-
-                if (questions?.levels[0]?.questions.length > 5) {
+                const questions = await questionModel.find({ gameCategory: categoryId, level });
+                if (questions.length > 5) {
 
                     function getRandom(arr, n) {
                         var result = new Array(n),
@@ -682,7 +681,7 @@ module.exports.getGameQuestions = [
                         return result;
                     }
 
-                    let selectedQuestions = getRandom(questions?.levels[0]?.questions,5)
+                    let selectedQuestions = getRandom(questions,5)
 
                     const game = await gameInfoModel.findOneAndUpdate({ gameCategory: categoryId, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { questions: selectedQuestions });
                     
@@ -690,7 +689,7 @@ module.exports.getGameQuestions = [
 
                 } else {
 
-                    res.status(201).json({ questions: questions?.levels[0]?.questions, message: "Questions fetched Successfully" });
+                    res.status(201).json({ questions: questions, message: "Questions fetched Successfully" });
 
                 }
 
