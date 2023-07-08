@@ -689,6 +689,8 @@ module.exports.getGameQuestions = [
 
                 } else {
 
+                    const game = await gameInfoModel.findOneAndUpdate({ gameCategory: categoryId, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { questions: questions });
+                    
                     res.status(201).json({ questions: questions, message: "Questions fetched Successfully" });
 
                 }
