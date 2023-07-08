@@ -601,14 +601,14 @@ module.exports.answerGame = [
                 
                 if (score >= 4) {
                     
-                    const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { answers: [], questions: [], $inc: { gameLevel: 1 }, tries: 0, bothUserAnsweredGame: null, gameAnsweredMatched: null });
+                    const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { answers: [], questions: [], $inc: { gameLevel: 1 }, tries: 0, bothUserAnsweredGame: null, gameAnsweredMatched: null }, { new: true });
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
                     res.status(201).json({ game: game, message: "Answered Successfully" });
 
                 } else {
-                    const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { $inc: { tries: 1 }, questions: [], bothUserAnsweredGame: null, gameAnsweredMatched: false });
+                    const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { $inc: { tries: 1 }, questions: [], bothUserAnsweredGame: null, gameAnsweredMatched: false }, { new: true });
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
@@ -617,7 +617,7 @@ module.exports.answerGame = [
 
             } else {
 
-                const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { answers, bothUserAnsweredGame: false, gameAnsweredMatched: false });
+                const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { answers, bothUserAnsweredGame: false, gameAnsweredMatched: false }, { new: true });
                 let user = user1 === req.user._id ? user2 : user1
                 const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 

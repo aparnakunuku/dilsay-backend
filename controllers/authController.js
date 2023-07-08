@@ -1,6 +1,7 @@
 const { body, validationResult } = require('express-validator');
 const { createToken } = require('../middlewares/verifyToken');
 const userModel = require('../models/userModel');
+const preferenceModel = require('../models/preferenceModel');
 
 module.exports.loginUser = [
     body('phoneNumber').not().isEmpty(),
