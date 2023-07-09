@@ -197,14 +197,13 @@ module.exports.getAllGameLevelsForUser = [
             })
             .select('levels')
 
-            const game = await gameInfoModel.findOne({ gameCategory, $or: [ { user1: user1 }, { user2: user2 } ], $or: [ { user1: user2 }, { user2: user1 } ] });
+            const game = await gameInfoModel.findOne({ gameCategory, $or: [ { user1: user1 }, { user2: user1 } ], $or: [ { user1: user2 }, { user2: user2 } ] });
 
             let currentLevel = 1;
 
             if (game) {
                 currentLevel = game.gameLevel
             }
-
             res.status(201).json({ game: game, gameLevels: gameLevels, currentLevel, message: "Game Levels Fetched Successfully" });
             
         }
