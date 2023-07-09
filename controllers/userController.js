@@ -20,7 +20,7 @@ module.exports.showAllProfiles = async (req, res) => {
             .findOne({ _id: req.user._id });
         
         let notInclude = user?.rejected.concat(user?.rejectedBy, user?.invitedProfiles,user?.blocked, user?.blockedBy);
-        console.log(user?.rejected)
+        
         let distance = req.query.distance || 30;
 
         let sortByDistance = {
