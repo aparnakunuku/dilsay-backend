@@ -540,7 +540,7 @@ module.exports.acceptOrRejectGameInvite = [
   
         try {
 
-            const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user2: user1 } ], $or: [ { user1: user2 }, { user2: user2 } ] }, { status });
+            const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user2: user1 } ], $or: [ { user1: user2 }, { user2: user2 } ] }, { status }, { new: true });
             
             let user = user1 === req.user._id ? user2 : user1
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} ${status} request for game category change.` })
