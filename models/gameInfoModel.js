@@ -74,6 +74,10 @@ const gameInfoSchema = mongoose.Schema(
             ref: 'user',
             required: true,
         },
+        gameAnsweredBy: [{
+            type: ObjectId,
+            ref: 'user',
+        }],
         answers: [answersSchema],
         questions: [questionsSchema]
     },
