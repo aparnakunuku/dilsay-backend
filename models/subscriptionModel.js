@@ -43,7 +43,7 @@ const subscriptionSchema = mongoose.Schema(
         validityPeriod: {
             type: String,
             required: true,
-            enum: ["7d", "30d", "90d"]
+            //enum: ["7d", "30d", "90d"]
         },
         discount: {
             type: Number,

@@ -147,7 +147,7 @@ module.exports.registerUser = [
 
                 let oppGender = (gender === "Male") ? "Female" : "Male"
 
-                const preferences = await preferenceModel.findOneAndUpdate({ user: req.user._id }, { gender : oppGender, startAge: 18, endAge: 22, longitude, latitude, distance: 5 }, { upsert: true });
+                const preferences = await preferenceModel.findOneAndUpdate({ user: user._id }, { gender : oppGender, startAge: 18, endAge: 22, longitude, latitude, distance: 5 }, { upsert: true });
 
                 if (
                     user?.name &&
