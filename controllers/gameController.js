@@ -474,6 +474,34 @@ module.exports.startGame = [
             let user = user1 === req.user._id ? user2 : user1
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} requested for game category change.` })
 
+            let headers = { 
+                'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                'Content-Type': 'application/json'
+            }
+
+            let payload = {
+                "registration_ids": [refUser],
+                "notification": {
+                    "body": `${req.user.name} requested for game category change.`,
+                    "title": "Game category requested",
+                    "android_channel_id": "dilsay",
+                    "sound": "default"
+                },
+                "apns": {
+                    "payload": {
+                        "aps": {
+                            "contentAvailable": true
+                        }
+                    },
+                    "headers": {
+                        "apns-priority": "10"
+                    }
+                }
+            }
+
+            let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});
+
+
             res.status(201).json({ game: game, message: "Game started Successfully" });
             
         }
@@ -545,6 +573,34 @@ module.exports.acceptOrRejectGameInvite = [
             let user = user1 === req.user._id ? user2 : user1
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} ${status} request for game category change.` })
 
+            let headers = { 
+                'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                'Content-Type': 'application/json'
+            }
+
+            let payload = {
+                "registration_ids": [refUser],
+                "notification": {
+                    "body": `${req.user.name} ${status} request for game category change.`,
+                    "title": "Game category requested",
+                    "android_channel_id": "dilsay",
+                    "sound": "default"
+                },
+                "apns": {
+                    "payload": {
+                        "aps": {
+                            "contentAvailable": true
+                        }
+                    },
+                    "headers": {
+                        "apns-priority": "10"
+                    }
+                }
+            }
+
+            let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});    
+
+
             res.status(201).json({ game: game, message: "Game started Successfully" });
             
         }
@@ -604,6 +660,33 @@ module.exports.answerGame = [
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
+                    let headers = { 
+                        'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                        'Content-Type': 'application/json'
+                    }
+    
+                    let payload = {
+                        "registration_ids": [refUser],
+                        "notification": {
+                            "body": `${req.user.name} answered the game questions.`,
+                            "title": "Game questions answered",
+                            "android_channel_id": "dilsay",
+                            "sound": "default"
+                        },
+                        "apns": {
+                            "payload": {
+                                "aps": {
+                                    "contentAvailable": true
+                                }
+                            },
+                            "headers": {
+                                "apns-priority": "10"
+                            }
+                        }
+                    }
+    
+                    let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});    
+
                     res.status(201).json({ game: game, message: "Answered Successfully" });
 
                 } else {
@@ -623,6 +706,34 @@ module.exports.answerGame = [
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
+                    let headers = { 
+                        'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                        'Content-Type': 'application/json'
+                    }
+    
+                    let payload = {
+                        "registration_ids": [refUser],
+                        "notification": {
+                            "body": `${req.user.name} answered the game questions.`,
+                            "title": "Game questions answered",
+                            "android_channel_id": "dilsay",
+                            "sound": "default"
+                        },
+                        "apns": {
+                            "payload": {
+                                "aps": {
+                                    "contentAvailable": true
+                                }
+                            },
+                            "headers": {
+                                "apns-priority": "10"
+                            }
+                        }
+                    }
+    
+                    let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});
+    
+
                     res.status(400).json({ game: game, message: "Answers do not match. Please try again!" });
                 }
 
@@ -631,6 +742,34 @@ module.exports.answerGame = [
                 const game = await gameInfoModel.findOneAndUpdate({ gameCategory, $or: [ { user1: user1 }, { user1: user2 } ], $or: [ { user2: user1 }, { user2: user2 } ] }, { gameAnsweredBy: [user1], answers, bothUserAnsweredGame: false, gameAnswersMatched: false }, { new: true });
                 let user = user1 === req.user._id ? user2 : user1
                 const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
+
+                let headers = { 
+                    'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                    'Content-Type': 'application/json'
+                }
+
+                let payload = {
+                    "registration_ids": [refUser],
+                    "notification": {
+                        "body": `${req.user.name} answered the game questions.`,
+                        "title": "Game question answered",
+                        "android_channel_id": "dilsay",
+                        "sound": "default"
+                    },
+                    "apns": {
+                        "payload": {
+                            "aps": {
+                                "contentAvailable": true
+                            }
+                        },
+                        "headers": {
+                            "apns-priority": "10"
+                        }
+                    }
+                }
+
+                let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});
+
 
                 res.status(201).json({ game: game, message: "Answered Successfully" });
             

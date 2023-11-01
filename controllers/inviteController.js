@@ -34,6 +34,34 @@ module.exports.sendInvite = [
                     { $push: { invitedProfiles: sentTo } }
                 );
                 const notification = await notificationModel.create({ user: sentTo, refUser: req.user._id, body: `${user.name} sent you an invite.` })
+
+                let headers = { 
+                    'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                    'Content-Type': 'application/json'
+                }
+
+                let payload = {
+                    "registration_ids": [senTo],
+                    "notification": {
+                        "body": `${user.name} sent you an invite.`,
+                        "title": "New invite",
+                        "android_channel_id": "dilsay",
+                        "sound": "default"
+                    },
+                    "apns": {
+                        "payload": {
+                            "aps": {
+                                "contentAvailable": true
+                            }
+                        },
+                        "headers": {
+                            "apns-priority": "10"
+                        }
+                    }
+                }
+
+                let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});
+
                 if (user.invitesSentCount === 24) {
                     const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { invitesSentTime: Date.now(), $inc: { invitesSentCount: 1 } });
                 } else {
@@ -122,6 +150,34 @@ module.exports.acceptOrRejectInvite = [
 
                 const invite = await inviteModel.findOneAndUpdate({ _id: inviteId, sentTo: req.user._id }, { inviteStatus });
                 const notification = await notificationModel.create({ user: invite.sentBy, refUser: req.user._id, body: `${user.name} ${inviteStatus} your invite.` })
+
+                let headers = { 
+                    'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                    'Content-Type': 'application/json'
+                }
+
+                let payload = {
+                    "registration_ids": [invite.sentBy],
+                    "notification": {
+                        "body": `${user.name} ${inviteStatus} your invite.`,
+                        "title": `Invite ${inviteStatus}`,
+                        "android_channel_id": "dilsay",
+                        "sound": "default"
+                    },
+                    "apns": {
+                        "payload": {
+                            "aps": {
+                                "contentAvailable": true
+                            }
+                        },
+                        "headers": {
+                            "apns-priority": "10"
+                        }
+                    }
+                }
+
+                let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});
+
                 if (inviteStatus === 'Accepted' && user.invitesAcceptedCount == 9) {
                     const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { invitesAcceptedTime: Date.now(), $inc: { invitesAcceptedCount: 1 } });
                 } else {

@@ -680,6 +680,34 @@ module.exports.likeImage = async (req, res) => {
                     imageId: req.params.id,
                     body: `${req.user.name} liked your pic.`,
                 });
+
+                let headers = { 
+                    'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                    'Content-Type': 'application/json'
+                }
+
+                let payload = {
+                    "registration_ids": [req.params.userId],
+                    "notification": {
+                        "body": `${req.user.name} liked your pic.`,
+                        "title": "Liked pic",
+                        "android_channel_id": "dilsay",
+                        "sound": "default"
+                    },
+                    "apns": {
+                        "payload": {
+                            "aps": {
+                                "contentAvailable": true
+                            }
+                        },
+                        "headers": {
+                            "apns-priority": "10"
+                        }
+                    }
+                }
+
+                let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});
+
             }
 
             const updatedUser = await user.save();
@@ -737,6 +765,34 @@ module.exports.loveImage = async (req, res) => {
                     body: `${req.user.name} loved your pic.`,
                 });
             }
+
+            let headers = { 
+                'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
+                'Content-Type': 'application/json'
+            }
+
+            let payload = {
+                "registration_ids": [req.params.userId],
+                "notification": {
+                    "body": `${req.user.name} loved your pic.`,
+                    "title": "Loved pic",
+                    "android_channel_id": "dilsay",
+                    "sound": "default"
+                },
+                "apns": {
+                    "payload": {
+                        "aps": {
+                            "contentAvailable": true
+                        }
+                    },
+                    "headers": {
+                        "apns-priority": "10"
+                    }
+                }
+            }
+
+            let result = await axios.post('https://fcm.googleapis.com/fcm/send', payload, {headers: headers});
+
 
             const updatedUser = await user.save();
 
