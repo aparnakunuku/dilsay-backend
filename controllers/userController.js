@@ -11,6 +11,7 @@ const s3Client = require('../config/s3');
 const preferenceModel = require('../models/preferenceModel');
 
 module.exports.showAllProfiles = async (req, res) => {
+    
     try {
         let page = parseInt(req.query.page) || 1;
         let pageSize = parseInt(req.query.pageSize) || 10;
@@ -52,9 +53,10 @@ module.exports.showAllProfiles = async (req, res) => {
         let count = await userModel.countDocuments({
             ...genderFilter,
             ...ageFilter,
-            _id: { $ne: req.user._id },
+            //_id: { $ne: req.user._id },
             userType: { $ne:'Super Admin' },
-            _id: { $nin: notInclude }
+            //_id: { $nin: notInclude }
+            _id: { $nin: [...notInclude, req.user._id] },
         });
 
         const users = await userModel
@@ -62,9 +64,10 @@ module.exports.showAllProfiles = async (req, res) => {
                 ...sortByDistance,
                 ...genderFilter,
                 ...ageFilter,
-                _id: { $ne: req.user._id },
+                //_id: { $ne: req.user._id },
                 userType: { $ne:'Super Admin' },
-                _id: { $nin: notInclude }
+                //_id: { $nin: notInclude }
+                _id: { $nin: [...notInclude, req.user._id] },
 
             })
             .skip(skip)
@@ -95,8 +98,9 @@ module.exports.showAllProfiles = async (req, res) => {
                 delete users[i].images[j].loves;
             }
         }
-
+const userid = req.user._id;
         res.status(201).json({
+            userid,
             count,
             page,
             pages: Math.ceil(count / pageSize),
