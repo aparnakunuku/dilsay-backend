@@ -35,13 +35,15 @@ module.exports.sendInvite = [
                 );
                 const notification = await notificationModel.create({ user: sentTo, refUser: req.user._id, body: `${user.name} sent you an invite.` })
 
+                let u = await userModel.findOne({ _id: refUser })
+
                 let headers = { 
                     'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                     'Content-Type': 'application/json'
                 }
 
                 let payload = {
-                    "registration_ids": [senTo],
+                    "registration_ids": [u.fcmToken],
                     "notification": {
                         "body": `${user.name} sent you an invite.`,
                         "title": "New invite",
@@ -151,13 +153,15 @@ module.exports.acceptOrRejectInvite = [
                 const invite = await inviteModel.findOneAndUpdate({ _id: inviteId, sentTo: req.user._id }, { inviteStatus });
                 const notification = await notificationModel.create({ user: invite.sentBy, refUser: req.user._id, body: `${user.name} ${inviteStatus} your invite.` })
 
+                let u = await userModel.findOne({ _id: invite.sentBy })
+
                 let headers = { 
                     'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                     'Content-Type': 'application/json'
                 }
 
                 let payload = {
-                    "registration_ids": [invite.sentBy],
+                    "registration_ids": [u.fcmToken],
                     "notification": {
                         "body": `${user.name} ${inviteStatus} your invite.`,
                         "title": `Invite ${inviteStatus}`,

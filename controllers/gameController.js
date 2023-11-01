@@ -3,6 +3,7 @@ const gameInfoModel = require("../models/gameInfoModel");
 const gameModel = require("../models/gameModel");
 const notificationModel = require("../models/notificationModel");
 const questionModel = require("../models/questionModel");
+const userModel = require("../models/userModel");
 
 module.exports.getAllGameCategories = async (req, res) => {
     
@@ -474,13 +475,15 @@ module.exports.startGame = [
             let user = user1 === req.user._id ? user2 : user1
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} requested for game category change.` })
 
+            let u = await userModel.findOne({ _id: refUser })
+
             let headers = { 
                 'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                 'Content-Type': 'application/json'
             }
 
             let payload = {
-                "registration_ids": [refUser],
+                "registration_ids": [u.fcmToken],
                 "notification": {
                     "body": `${req.user.name} requested for game category change.`,
                     "title": "Game category requested",
@@ -573,13 +576,15 @@ module.exports.acceptOrRejectGameInvite = [
             let user = user1 === req.user._id ? user2 : user1
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} ${status} request for game category change.` })
 
+            let u = await userModel.findOne({ _id: refUser })
+
             let headers = { 
                 'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                 'Content-Type': 'application/json'
             }
 
             let payload = {
-                "registration_ids": [refUser],
+                "registration_ids": [u.fcmToken],
                 "notification": {
                     "body": `${req.user.name} ${status} request for game category change.`,
                     "title": "Game category requested",
@@ -660,13 +665,15 @@ module.exports.answerGame = [
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
+                    let u = await userModel.findOne({ _id: refUser })
+
                     let headers = { 
                         'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                         'Content-Type': 'application/json'
                     }
     
                     let payload = {
-                        "registration_ids": [refUser],
+                        "registration_ids": [u.fcmToken],
                         "notification": {
                             "body": `${req.user.name} answered the game questions.`,
                             "title": "Game questions answered",
@@ -706,13 +713,15 @@ module.exports.answerGame = [
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
+                    let u = await userModel.findOne({ _id: refUser })
+
                     let headers = { 
                         'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                         'Content-Type': 'application/json'
                     }
     
                     let payload = {
-                        "registration_ids": [refUser],
+                        "registration_ids": [u.fcmToken],
                         "notification": {
                             "body": `${req.user.name} answered the game questions.`,
                             "title": "Game questions answered",
@@ -743,13 +752,15 @@ module.exports.answerGame = [
                 let user = user1 === req.user._id ? user2 : user1
                 const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
+                let u = await userModel.findOne({ _id: refUser })
+
                 let headers = { 
                     'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                     'Content-Type': 'application/json'
                 }
 
                 let payload = {
-                    "registration_ids": [refUser],
+                    "registration_ids": [u.fcmToken],
                     "notification": {
                         "body": `${req.user.name} answered the game questions.`,
                         "title": "Game question answered",

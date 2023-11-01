@@ -691,7 +691,7 @@ module.exports.likeImage = async (req, res) => {
                 }
 
                 let payload = {
-                    "registration_ids": [req.params.userId],
+                    "registration_ids": [user.fcmToken],
                     "notification": {
                         "body": `${req.user.name} liked your pic.`,
                         "title": "Liked pic",
@@ -776,7 +776,7 @@ module.exports.loveImage = async (req, res) => {
             }
 
             let payload = {
-                "registration_ids": [req.params.userId],
+                "registration_ids": [user.fcmToken],
                 "notification": {
                     "body": `${req.user.name} loved your pic.`,
                     "title": "Loved pic",
