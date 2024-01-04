@@ -9,6 +9,7 @@ const verificationModel = require('../models/verificationModel');
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const s3Client = require('../config/s3');
 const preferenceModel = require('../models/preferenceModel');
+const axios = require("axios");
 
 module.exports.showAllProfiles = async (req, res) => {
     

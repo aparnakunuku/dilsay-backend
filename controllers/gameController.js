@@ -4,6 +4,7 @@ const gameModel = require("../models/gameModel");
 const notificationModel = require("../models/notificationModel");
 const questionModel = require("../models/questionModel");
 const userModel = require("../models/userModel");
+const axios = require("axios");
 
 module.exports.getAllGameCategories = async (req, res) => {
     
