@@ -686,6 +686,8 @@ module.exports.likeImage = async (req, res) => {
                     body: `${req.user.name} liked your pic.`,
                 });
 
+                user.isNotificationRead = false;
+
                 let headers = { 
                     'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
                     'Content-Type': 'application/json'
@@ -770,6 +772,8 @@ module.exports.loveImage = async (req, res) => {
                     body: `${req.user.name} loved your pic.`,
                 });
             }
+            
+            user.isNotificationRead = false;
 
             let headers = { 
                 'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
@@ -866,3 +870,18 @@ module.exports.getPrefernces = async (req, res) => {
     }
 
 }
+
+module.exports.updateNotificationStatus = async (req, res) => {
+  try {
+
+    const user = await userModel.findOneAndUpdate({ _id: req.user._id }, { isNotificationRead: true });
+
+    res.status(201).json({
+      user: user,
+      message: "Notification status Successfully",
+    });
+  } catch (err) {
+    let error = err.message;
+    res.status(400).json({ error: error });
+  }
+};

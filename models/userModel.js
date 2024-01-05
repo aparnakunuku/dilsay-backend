@@ -137,6 +137,10 @@ const userSchema = mongoose.Schema(
         fcmToken: {
             type: String,
         },
+        isNotificationRead: {
+            type: Boolean,
+            default: true,
+        }
     },
     { timestamps: true }
 );

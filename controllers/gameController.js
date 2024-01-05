@@ -476,7 +476,7 @@ module.exports.startGame = [
             let user = user1 === req.user._id ? user2 : user1
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} requested for game category change.` })
 
-            let u = await userModel.findOne({ _id: refUser })
+            let u = await userModel.findOneAndUpdate({ _id: refUser }, { isNotificationRead: false })
 
             let headers = { 
                 'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
@@ -577,7 +577,7 @@ module.exports.acceptOrRejectGameInvite = [
             let user = user1 === req.user._id ? user2 : user1
             const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} ${status} request for game category change.` })
 
-            let u = await userModel.findOne({ _id: refUser })
+            let u = await userModel.findOneAndUpdate({ _id: refUser }, { isNotificationRead: false });
 
             let headers = { 
                 'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
@@ -666,7 +666,10 @@ module.exports.answerGame = [
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
-                    let u = await userModel.findOne({ _id: refUser })
+                    let u = await userModel.findOneAndUpdate(
+                      { _id: refUser },
+                      { isNotificationRead: false }
+                    );
 
                     let headers = { 
                         'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
@@ -714,7 +717,10 @@ module.exports.answerGame = [
                     let user = user1 === req.user._id ? user2 : user1
                     const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
-                    let u = await userModel.findOne({ _id: refUser })
+                    let u = await userModel.findOneAndUpdate(
+                      { _id: refUser },
+                      { isNotificationRead: false }
+                    );
 
                     let headers = { 
                         'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
@@ -753,7 +759,10 @@ module.exports.answerGame = [
                 let user = user1 === req.user._id ? user2 : user1
                 const notification = await notificationModel.create({ user, refUser: req.user._id, body: `${req.user.name} answered the game questions.` })
 
-                let u = await userModel.findOne({ _id: refUser })
+                let u = await userModel.findOneAndUpdate(
+                  { _id: refUser },
+                  { isNotificationRead: false }
+                );
 
                 let headers = { 
                     'Authorization': 'key=AAAAIkbj4C4:APA91bFY3e4nCIaodc-18ruDbz6uu_NEz2pFCSnzkcj9-GV2V802y2Q6kDmsQwh46yaD8c1Cq1CNExpzPydbOJtnHB3icgHf5SHzjkeCRetQWR_lAsBhYi3FMu2S60xajIDWJv9igsJ6', 
