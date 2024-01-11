@@ -22,6 +22,17 @@ module.exports.sendInvite = [
       let date = new Date();
       date.setDate(date.getDate() - 1);
 
+      const invite = await inviteModel.findOne({
+        sentTo,
+        sentBy: req.user._id,
+      });
+
+      if (invite) {
+        res
+          .status(400)
+          .json({ message: "Invite already sent" });
+      }
+
       if (user.invitesSentCount == 25 && date > user?.invitesSentTime) {
         res
           .status(400)
@@ -42,7 +53,7 @@ module.exports.sendInvite = [
           body: `${user.name} sent you an invite.`,
         });
 
-        let u = await userModel.findOne({ _id: refUser });
+        let u = await userModel.findOne({ _id: sentTo });
 
         let headers = {
           Authorization:
